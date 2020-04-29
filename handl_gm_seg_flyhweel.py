@@ -6,8 +6,8 @@ import t_map_flywheel as tmf
 from glob import glob
 import nibabel as nb
 import numpy as np
-pth='/data/henry6/esha/Data/Interp_10/Current_Data/all/'
-pth2='/data/henry6/esha/Data/Masks_interp10/butterfly/all/'
+pth='/flywheel/v0/input/pth/'
+pth2='/flywheel/v0/input/pth2/'
 def gray_matter_seg(psir,roi,outputs_path, prefix=0):
 	cord,crop_aff,cordpth=crz.create_zoomed_files(psir, roi,outputs_path)
 	if bulk.run_this(cordpth,outputs_path,pth,pth2, prefix):

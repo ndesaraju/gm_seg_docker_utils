@@ -60,6 +60,8 @@ class SimpleRegister:
 		printer=[]
 		sleep(90)
 		fin=0
+		import pdb
+		pdb.set_trace()
 		for i in ind:
 			printer.append(i.poll())
 			if i.poll()==None:

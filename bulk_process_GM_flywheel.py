@@ -159,7 +159,7 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
     output_path=outputs_path+'/registrations1/'
     dim=2
     static_path=static
-    GRP.SimpleRegister(pth,output_path,static_path,file_handl,pth2=pth2).Syn(gilroy=True)
+    GRP.SimpleRegister(pth,output_path,static_path,file_handl,pth2=pth2).Syn(gilroy=False)
     file_handl.write(str(static)+'\n')
     
 

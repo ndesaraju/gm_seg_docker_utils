@@ -34,7 +34,7 @@ class SimpleRegister:
 		else:
 			lambs2=lambda x:True
 
-		self.pth=os.path.dirname(pth)+'/'
+		self.pth=os.path.dirname(pth)
 		
 		self.output_path=output_path
  #               if not os.path.exists(output_path):
@@ -60,8 +60,8 @@ class SimpleRegister:
 		printer=[]
 		sleep(90)
 		fin=0
-		import pdb
-		pdb.set_trace()
+		# import pdb
+		# pdb.set_trace()
 		for i in ind:
 			printer.append(i.poll())
 			if i.poll()==None:
@@ -95,14 +95,14 @@ class SimpleRegister:
 		for i in range(len(self.files)):
 
 			print(i)
-			metric_str='MI['+','.join([self.static_path,self.pth+self.files[i],'1','32'])+']'
+			metric_str='MI['+','.join([self.static_path,os.path.join(self.pth, self.files[i]),'1','32'])+']'
 
 			cmd=['antsRegistration','--dimensionality',str(dim),'--output',self.output_path+'warp'+self.files[i].split('.')[0],'--transform','Rigid['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas)]
 			proc=Popen(cmd,stdout=PIPE)
 			proc.wait()
 
 
-			cmd=['WarpImageMultiTransform',str(dim),self.pth2+self.files2[i],self.output_path+'warped/'+self.files2[i].split('.')[0]+'.nii.gz',self.output_path+'warp'+self.files[i].split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
+			cmd=['WarpImageMultiTransform',str(dim),os.path.join(self.pth2, self.files2[i]),self.output_path+'warped/'+self.files2[i].split('.')[0]+'.nii.gz',self.output_path+'warp'+self.files[i].split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
 			proc=Popen(cmd,stdout=PIPE)
 			proc.wait()
 
@@ -191,30 +191,30 @@ class SimpleRegister:
 		cmd_array=[]
 		count=0
 		for i in range(len(self.files)):
-			fil=self.files[i]
-			fil2=self.files2[i]
-			# self.static_path is fixed img, self.files[i] is moving img
-			metric_str='MI['+','.join([self.static_path,self.pth+fil,'1','32'])+']'
-			metric_str1='CC['+','.join([self.static_path,self.pth+fil,'1','3'])+']'
-			metric_str2='Mattes['+','.join([self.static_path,self.pth+fil,'1','32'])+']'
-			#print(self.output_path,self.pth+fil,self.pth2+fil2)
+			if self.files[i] != '.DS_Store':
+				fil=self.files[i]
+				fil2=self.files2[i]
+				# self.static_path is fixed img, self.files[i] is moving img
+				metric_str='MI['+','.join([self.static_path,self.pth+fil,'1','32'])+']'
+				metric_str1='CC['+','.join([self.static_path,self.pth+fil,'1','3'])+']'
+				metric_str2='Mattes['+','.join([self.static_path,self.pth+fil,'1','32'])+']'
+				#print(self.output_path,self.pth+fil,self.pth2+fil2)
 
-			cmd=['antsRegistration','--dimensionality',str(dim),'--output',self.output_path+'warp'+fil.split('.')[0],'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
+				cmd=['antsRegistration','--dimensionality',str(dim),'--output',self.output_path+'warp'+fil.split('.')[0],'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
 
 
-
-			cmd1=['WarpImageMultiTransform',str(dim),self.pth2+fil2,self.output_path+'warped/'+fil2.split('.')[0]+'.nii.gz',self.output_path+'warp'+fil.split('.')[0]+'1Warp.nii.gz',self.output_path+'warp'+fil.split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
-			cmd2=['WarpImageMultiTransform',str(dim),self.pth+fil,self.output_path+'warped1/'+fil.split('.')[0]+'.nii.gz',self.output_path+'warp'+fil.split('.')[0]+'1Warp.nii.gz',self.output_path+'warp'+fil.split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
-				
-			#grid_job = self.grid_submit( cmd+cmd1+cmd2, '{}_{}_reg'.format(self.static_path.split('/')[-1][:4], i)) 
-			job_array.append(cmd)
-			job1_array.append((cmd1,cmd2))
-			cmd_array.append(cmd)
-			count+=1
-			if gilroy:
-				if count>15:
-					self.check_finished(job_array,0)
-					count=0
+				cmd1=['WarpImageMultiTransform',str(dim),self.pth2+fil2,self.output_path+'warped/'+fil2.split('.')[0]+'.nii.gz',self.output_path+'warp'+fil.split('.')[0]+'1Warp.nii.gz',self.output_path+'warp'+fil.split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
+				cmd2=['WarpImageMultiTransform',str(dim),self.pth+fil,self.output_path+'warped1/'+fil.split('.')[0]+'.nii.gz',self.output_path+'warp'+fil.split('.')[0]+'1Warp.nii.gz',self.output_path+'warp'+fil.split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
+					
+				#grid_job = self.grid_submit( cmd+cmd1+cmd2, '{}_{}_reg'.format(self.static_path.split('/')[-1][:4], i)) 
+				job_array.append(cmd)
+				job1_array.append((cmd1,cmd2))
+				cmd_array.append(cmd)
+				count+=1
+				if gilroy:
+					if count>15:
+						self.check_finished(job_array,0)
+						count=0
 		
 		for cmd in job_array:
 			proc = Popen(cmd,stdout=PIPE)

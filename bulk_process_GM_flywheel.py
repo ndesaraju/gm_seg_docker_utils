@@ -153,10 +153,10 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
     else:
         mse_static=prefix
     try:
-        os.remove(outputs_path+'/registrations1/warped/synslice_avggmsegs.nii.gz')
+        os.remove(os.path.join(outputs_path,'/registrations1/warped/synslice_avggmsegs.nii.gz'))
     except:
         pass
-    output_path=outputs_path+'/registrations1/'
+    output_path=os.path.join(outputs_path, '/registrations1/')
     dim=2
     static_path=static
     GRP.SimpleRegister(pth,output_path,static_path,file_handl,pth2=pth2).Syn(gilroy=True)

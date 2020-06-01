@@ -159,6 +159,10 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
     output_path=os.path.join(outputs_path, '/registrations1/')
     dim=2
     static_path=static
+    print("pth passed in during bulk")
+    print(pth)
+    import pdb
+    pdb.set_trace()
     GRP.SimpleRegister(pth,output_path,static_path,file_handl,pth2=pth2).Syn(gilroy=True)
     file_handl.write(str(static)+'\n')
     

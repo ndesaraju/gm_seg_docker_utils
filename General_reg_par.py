@@ -34,8 +34,12 @@ class SimpleRegister:
 		else:
 			lambs2=lambda x:True
 
+		import pdb
+		pdb.set_trace()
+		print("pth:")
+		print(pth)
 		self.pth=os.path.dirname(pth)
-		print("this value mmight be 'pth'")
+		print("this value mmight be 'pth':")
 		print(os.path.dirname(pth), self.pth)
 		self.output_path=output_path
  #               if not os.path.exists(output_path):

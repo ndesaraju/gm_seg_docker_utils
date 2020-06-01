@@ -35,7 +35,8 @@ class SimpleRegister:
 			lambs2=lambda x:True
 
 		self.pth=os.path.dirname(pth)
-		
+		print("this value mmight be 'pth'")
+		print(os.dirname(pth), self.pth)
 		self.output_path=output_path
  #               if not os.path.exists(output_path):
 #                        os.makedirs(self.output_path)

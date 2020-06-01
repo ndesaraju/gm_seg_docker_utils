@@ -195,10 +195,12 @@ class SimpleRegister:
 				fil=self.files[i]
 				fil2=self.files2[i]
 				# self.static_path is fixed img, self.files[i] is moving img
-				metric_str='MI['+','.join([self.static_path,self.pth+fil,'1','32'])+']'
-				metric_str1='CC['+','.join([self.static_path,self.pth+fil,'1','3'])+']'
-				metric_str2='Mattes['+','.join([self.static_path,self.pth+fil,'1','32'])+']'
-				#print(self.output_path,self.pth+fil,self.pth2+fil2)
+				print(self.pth)
+				print(os.path.join(self.pth,fil))
+				metric_str='MI['+','.join([self.static_path,os.path.join(self.pth,fil),'1','32'])+']'
+				metric_str1='CC['+','.join([self.static_path,os.path.join(self.pth,fil),'1','3'])+']'
+				metric_str2='Mattes['+','.join([self.static_path,os.path.join(self.pth,fil),'1','32'])+']'
+				print(self.output_path,self.pth+fil,self.pth2+fil2)
 
 				cmd=['antsRegistration','--dimensionality',str(dim),'--output',self.output_path+'warp'+fil.split('.')[0],'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
 

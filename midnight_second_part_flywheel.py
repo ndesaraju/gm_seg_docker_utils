@@ -175,11 +175,11 @@ def run_this(static,outputs_path,prefix=0):
     
 
     try:
-        os.remove(outputs_path+'/registrations2/warped/synslice_avggmsegs.nii.gz')
+        os.remove(os.path.join(outputs_path, '/registrations2/warped/synslice_avggmsegs.nii.gz'))
     except:
         pass
 
-    output_path=outputs_path+'/registrations1/'
+    output_path = os.path.join(outputs_path, '/registrations1/')
 
   
     if apply_warps==True:
@@ -187,8 +187,8 @@ def run_this(static,outputs_path,prefix=0):
         static_path=static
         files=sorted(glob('/data/henry6/esha/Data/Interp_10/Current_Data/sharpened/*'))
         files2=sorted(glob('/data/henry6/esha/Data/Masks_interp10/butterfly/all/*'))
-        if not os.path.exists(output_path+'warped1'):
-            os.makedirs(self.output_path+'warped1')
+        if not os.path.exists(os.path.join(output_path, 'warped1')):
+            os.makedirs(os.path.join(self.output_path, 'warped1'))
         for i in range(len(files)):
             if 'syn' in files[i]:
                 continue
@@ -196,14 +196,14 @@ def run_this(static,outputs_path,prefix=0):
             fls2=os.path.basename(files2[i])
             print((fls,fls2))
             cmd1=['WarpImageMultiTransform',str(dim),files2[i],
-                   output_path+'warped/'+fls2.split('.')[0]+'.nii.gz',
-                   output_path+'warp'+fls.split('.')[0]+'1Warp.nii.gz',
-                   output_path+'warp'+fls.split('.')[0]+'0GenericAffine.mat',
+                   os.path.join(os.path.join(output_path, 'warped/'), fls2.split('.')[0]+'.nii.gz'),
+                   os.path.join(os.path.join(output_path, 'warp') , fls.split('.')[0]+'1Warp.nii.gz'),
+                   os.path.join(os.path.join(output_path, 'warp'), fls.split('.')[0]+'0GenericAffine.mat'),
                    '-R',static_path, '\n']
             cmd2=['WarpImageMultiTransform',str(dim),files[i],
-                   output_path+'warped1/'+fls.split('.')[0]+'.nii.gz',
-                   output_path+'warp'+fls.split('.')[0]+'1Warp.nii.gz',
-                   output_path+'warp'+fls.split('.')[0]+'0GenericAffine.mat',
+                   os.path.join(os.path.join(output_path, 'warped1/'), fls.split('.')[0]+'.nii.gz'),
+                   os.path.join(os.path.join(output_path, 'warp'), fls.split('.')[0]+'1Warp.nii.gz'),
+                   os.path.join(os.path.join(output_path, 'warp'), fls.split('.')[0]+'0GenericAffine.mat'),
                    '-R',static_path, '\n']
             proc=Popen(cmd1,stdout=PIPE)
             proc.wait()
@@ -212,18 +212,18 @@ def run_this(static,outputs_path,prefix=0):
             proc.wait()
 ###run process to grab distributions##
 
-    template_grays=glob(outputs_path+'/registrations2/warped/ms*.nii.gz')
-    templates=glob(outputs_path+'/registrations1/warped1/ms*.nii.gz')
+    template_grays=glob(os.path.join(outputs_path, '/registrations2/warped/ms*.nii.gz'))
+    templates=glob(os.path.join(outputs_path, '/registrations1/warped1/ms*.nii.gz'))
     fgs,distributions,a,adat,adat_raw=create_prob_seg_iteration3(template_grays,templates,static,file_handl) 
-    avgim(outputs_path+'/registrations2/warped/')
+    avgim(os.path.join(outputs_path, '/registrations2/warped/'))
 ###run process to fit lines###
 
     
     aff=nb.load(static)
     adat_raw=nb.load(static).get_data()
-    first_tmap=nb.load(glob(outputs_path+'/quality_assurance/t_map.nii.gz')[0]).get_data()
+    first_tmap=nb.load(glob(os.path.join(outputs_path, '/quality_assurance/t_map.nii.gz'))[0]).get_data()
     adat_z=z_score(adat,mapt=first_tmap)
-    mask=nb.load(glob(outputs_path+'/registrations2/warped/syn*')[0]).get_data()
+    mask=nb.load(glob(os.path.join(outputs_path, '/registrations2/warped/syn*'))[0]).get_data()
 
     mask=np.where(mask>.6,mask,0)
     bar=np.mean(adat_z[np.where(mask>0)])
@@ -353,15 +353,15 @@ def run_this(static,outputs_path,prefix=0):
     #nb.save(nb.Nifti1Image(slope,a.affine),'/data/henry4/jjuwono/slopes.nii.gz')
     #nb.save(nb.Nifti1Image(intercept,a.affine),'/data/henry4/jjuwono/intercepts.nii.gz')
     try:
-        os.mkdir(outputs_path+'/final_output')
+        os.mkdir(os.path.join(outputs_path, '/final_output'))
     except:
         pass
     #nb.save(nb.Nifti1Image(confidences,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/confidence.nii.gz')
     #nb.save(nb.Nifti1Image(new_image,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/new_image.nii.gz')
     #nb.save(nb.Nifti1Image(new_image_logi,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/new_image_logi.nii.gz')
-    nb.save(nb.Nifti1Image(t_map,aff.affine),outputs_path+'/final_output/rereg_t_map.nii.gz')
+    nb.save(nb.Nifti1Image(t_map,aff.affine), os.path.join(outputs_path, '/final_output/rereg_t_map.nii.gz'))
     #nb.save(nb.Nifti1Image(color_im,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/color_im.nii.gz')
-    nb.save(nb.Nifti1Image(original_line_fit,aff.affine),outputs_path+'/final_output/rereg_original_line_fit.nii.gz')
+    nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, '/final_output/rereg_original_line_fit.nii.gz'))
     return 1
 if __name__=='__main__':
     run_this('/data/henry4/jjuwono/outputs_mse2976/final_output/only_cordms1907-mse2976-010-C2_3_2Fl_seg_psir_TI_PSIR.nii.gz','/data/henry4/jjuwono/outputs_mse2976')

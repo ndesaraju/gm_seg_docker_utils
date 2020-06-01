@@ -42,10 +42,10 @@ def alter_ims(ima,mask,naming):
 	
 def individual_correct(i,cord,target,naming,subject,outputs_path,file_handl):
     try:
-        os.mkdir(outputs_path+'/working')
+        os.mkdir(os.path.join(outputs_path, '/working'))
     except:
         pass
-    working=outputs_path+'/working/'
+    working=os.path.join(outputs_path, '/working/')
     mse=subject
     #cord_image=glob('/data/henry11/PBR/subjects/'+mse+'/nii/*only_cord*C2_3*psir*PSIR*')+glob('/data/henry7/PBR/subjects/'+mse+'/nii/*only_cord*C2_3*psir*PSIR*')
     #cord_image=glob('/data/henry6/PBR/H_cohort/*only_cord*'+mse+'*C2_3.nii.gz')
@@ -59,16 +59,16 @@ def individual_correct(i,cord,target,naming,subject,outputs_path,file_handl):
         return ' '
     #pth=[working+'altered.nii.gz']
     try:
-        os.mkdir(outputs_path+'/registrations2')
+        os.mkdir(os.path.join(outputs_path, '/registrations2'))
 
     except:
         pass
     try:
-        os.mkdir(outputs_path+'/registrations2/warped')
+        os.mkdir(os.path.join(outputs_path, '/registrations2/warped'))
     except:
         pass
     
-    output_path=outputs_path+'/registrations2/'
+    output_path=os.path.join(outputs_path, '/registrations2/')
     static_path=target
     filt=None
     pth2=[i]
@@ -100,19 +100,19 @@ def run_this(static,outputs_path,prefix=0):
         
     print('#########{}######{}'.format(subject,subject))
     file_handl.write('#########{}######{}\n'.format(subject,subject))
-    registrations=sorted(glob(outputs_path+'/registrations1/warped/*.nii.gz'))
+    registrations=sorted(glob(os.path.join(outputs_path, '/registrations1/warped/*.nii.gz')))
     try:
-        registrations.remove(outputs_path+'/registrations1/warped/synslice_avggmsegs.nii.gz')
-        registrations.remove(outputs_path+'/registrations1/warped/cor_synslice_avggmsegs.nii.gz')
+        registrations.remove(os.path.join(outputs_path, '/registrations1/warped/synslice_avggmsegs.nii.gz'))
+        registrations.remove(os.path.join(outputs_path, '/registrations1/warped/cor_synslice_avggmsegs.nii.gz'))
     except:
         pass
-    cord_registrations=sorted(glob(outputs_path+'/registrations1/warped1/*.nii.gz'))
+    cord_registrations=sorted(glob(os.path.join(outputs_path, '/registrations1/warped1/*.nii.gz')))
     try:
-        cord_registrations.remove(outputs_path+'/registrations1/warped1/synslice_avggmsegs.nii.gz')
+        cord_registrations.remove(os.path.join(outputs_path, '/registrations1/warped1/synslice_avggmsegs.nii.gz'))
     except:
         pass
-    t_map=outputs_path+'/quality_assurance/t_map.nii.gz'
-    original_line_fit=outputs_path+'/quality_assurance/original_line_fit.nii.gz'
+    t_map=os.path.join(outputs_path, '/quality_assurance/t_map.nii.gz')
+    original_line_fit=os.path.join(outputs_path, '/quality_assurance/original_line_fit.nii.gz')
     target=static
     olf=nb.load(original_line_fit).get_data()
     poop1=nb.load(target)
@@ -134,8 +134,8 @@ def run_this(static,outputs_path,prefix=0):
     for i in range(len(tmp[0])):
         new[tmp[0][i],tmp[1][i]]=poop1_dat[tmp[0][i],tmp[1][i]]
 
-    nb.save(nb.Nifti1Image(new,poop1.affine),outputs_path+'/quality_assurance/cor_raw_im.nii.gz')
-    target=outputs_path+'/quality_assurance/cor_raw_im.nii.gz'
+    nb.save(nb.Nifti1Image(new,poop1.affine),os.path.join(outputs_path,'/quality_assurance/cor_raw_im.nii.gz'))
+    target=os.path.join(outputs_path,'/quality_assurance/cor_raw_im.nii.gz')
     output=[]
     data_dict={}
     for dicting in range(max((len(registrations),len(cord_registrations)))):

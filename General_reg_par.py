@@ -61,7 +61,7 @@ class SimpleRegister:
 		printer=[]
 		sleep(90)
 		fin=0
-		import pdb
+		# import pdb
 		for i in ind:
 			# pdb.set_trace()
 			printer.append(i.poll())
@@ -90,7 +90,7 @@ class SimpleRegister:
 	def rigid(self,dim=2,grad_step=0.1,bins=32,convergence='500x500x500',convrg_thresh='1e-5',shrink_factors='1x1x1',smoothing_sigmas='1x1x1'):
 		if not os.path.exists(self.output_path):
 			os.makedirs(self.output_path)
-			os.makedirs(self.output_path+'warped')
+			os.makedirs(os.path.join(self.output_path,'warped'))
 		#create warped directory in outputh path 
 
 		for i in range(len(self.files)):
@@ -98,19 +98,19 @@ class SimpleRegister:
 			print(i)
 			metric_str='MI['+','.join([self.static_path,os.path.join(self.pth, self.files[i]),'1','32'])+']'
 
-			cmd=['antsRegistration','--dimensionality',str(dim),'--output',self.output_path+'warp'+self.files[i].split('.')[0],'--transform','Rigid['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas)]
+			cmd=['antsRegistration','--dimensionality',str(dim),'--output', os.path.join(os.path.join(self.output_path, 'warp'), self.files[i].split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas)]
 			proc=Popen(cmd,stdout=PIPE)
 			proc.wait()
 
 
-			cmd=['WarpImageMultiTransform',str(dim),os.path.join(self.pth2, self.files2[i]),self.output_path+'warped/'+self.files2[i].split('.')[0]+'.nii.gz',self.output_path+'warp'+self.files[i].split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
+			cmd=['WarpImageMultiTransform',str(dim),os.path.join(self.pth2, self.files2[i]),os.path.join(os.path.join(self.output_path,'warped/'), self.files2[i].split('.')[0]+'.nii.gz'), os.path.join(os.path.join(self.output_path, 'warp'), self.files[i].split('.')[0]+'0GenericAffine.mat'),'-R',self.static_path]
 			proc=Popen(cmd,stdout=PIPE)
 			proc.wait()
 
 	def affine(self,dim=2,grad_step=0.1,bins=32,convergence='500x500x500',convrg_thresh='1e-5',shrink_factors='1x1x1',smoothing_sigmasr='1x1x1',smoothing_sigmas='1x1x1'):
 		if not os.path.exists(self.output_path):
 			os.makedirs(self.output_path)
-			os.makedirs(self.output_path+'warped')
+			os.makedirs(os.path.join(self.output_path,'warped'))
 
 
 		#create warped directory in outputh path 
@@ -118,22 +118,22 @@ class SimpleRegister:
 		for i in range(len(self.files)):
 
 			print(i)
-			metric_str='MI['+','.join([self.static_path,self.pth+self.files[i],'1','32'])+']'
+			metric_str='MI['+','.join([self.static_path,os.path.join(self.pth,self.files[i]),'1','32'])+']'
 			#metric_str='CC['+','.join([self.static_path,self.pth+self.files[i],'1','2'])+']'
 
 
-			cmd=['antsRegistration','--dimensionality',str(dim),'--output',self.output_path+'warp'+self.files[i].split('.')[0],'--transform','Rigid['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas)]
+			cmd=['antsRegistration','--dimensionality',str(dim),'--output',os.path.join(os.path.join(self.output_path,'warp'),self.files[i].split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas)]
 			proc=Popen(cmd,stdout=PIPE)
 			proc.wait()
 
 
-			cmd=['WarpImageMultiTransform',str(dim),self.pth2+self.files2[i],self.output_path+'warped/'+self.files2[i].split('.')[0]+'.nii.gz',self.output_path+'warp'+self.files[i].split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
+			cmd=['WarpImageMultiTransform',str(dim),os.path.join(self.pth2,self.files2[i]),os.path.join(os.path.join(self.output_path,'warped/'),self.files2[i].split('.')[0]+'.nii.gz'),os.path.join(os.path.join(self.output_path,'warp'), self.files[i].split('.')[0]+'0GenericAffine.mat'),'-R',self.static_path]
 			proc=Popen(cmd,stdout=PIPE)
 			proc.wait()
 	def super_affine(self,subject_id,dim=3,grad_step=0.1,bins=32,convergence='400x300x100x500',convrg_thresh='1e-6',shrink_factors='8x4x2x1',smoothing_sigmasr='2x2x1x1',smoothing_sigmas='2x2x1x1'):
 		if not os.path.exists(self.output_path):
 			os.makedirs(self.output_path)
-			os.makedirs(self.output_path+'warped')
+			os.makedirs(os.path.join(self.output_path,'warped'))
 
 		job_array=[]
 		job1_array=[]
@@ -148,8 +148,8 @@ class SimpleRegister:
 				continue
 			print('poopity_scoop')
 			print(self.files[i])
-			metric_strm='MI['+','.join([self.static_path,self.pth+self.files[i],'1','32','Regular','0.25'])+']'
-			metric_str='CC['+','.join([self.static_path,self.pth+self.files[i],'0.4','8','Regular','0.5'])+']'
+			metric_strm='MI['+','.join([self.static_path,os.path.join(self.pth,self.files[i]),'1','32','Regular','0.25'])+']'
+			metric_str='CC['+','.join([self.static_path,os.path.join(self.pth, self.files[i]),'0.4','8','Regular','0.5'])+']'
 
 			
 			#cmd=['antsRegistration','--dimensionality',str(dim),'--output',self.output_path+'warp'+self.files[i].split('.')[0],'--winsorize-image-intensities','[0.02,0.97]','--initial-moving-transform','['+o_path+os.path.basename(self.static_path)+','+o_path+self.files[i]+',1]','--transform','Rigid['+str(grad_step)+']','--metric',metric_str,'--convergence','[50x50x50x100'+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_strm,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','Affine['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas)]
@@ -157,7 +157,7 @@ class SimpleRegister:
 	
 
 
-			cmd1=['WarpImageMultiTransform',str(dim),self.pth2+self.files2[i],self.output_path+'warped/'+self.files2[i].split('.')[0]+'.nii.gz',self.output_path+'warp'+self.files[i].split('.')[0]+'0GenericAffine.mat','-R',self.static_path]
+			cmd1=['WarpImageMultiTransform',str(dim),os.path.join(self.pth2,self.files2[i]),os.path.join(os.path.join(self.output_path,'warped/'),self.files2[i].split('.')[0]+'.nii.gz'),os.path.join(os.path.join(self.output_path, 'warp'), self.files[i].split('.')[0]+'0GenericAffine.mat'),'-R',self.static_path]
 			cmd2=[]
 			#job_array.append(Popen(cmd,stdout=PIPE))
 			job1_array.append((cmd1,cmd2))
@@ -179,9 +179,9 @@ class SimpleRegister:
 	def Syn(self,gilroy=False,dim=2,grad_step=0.1,bins=32,convergence='500x500x500',convrg_thresh='1e-5',shrink_factors='4x1x1',smoothing_sigmasr='1x1x1',smoothing_sigmas='1x1x1'):
 		if not os.path.exists(self.output_path):
 			os.makedirs(self.output_path)
-			os.makedirs(self.output_path+'warped')
-		if not os.path.exists(self.output_path+'warped1'):
-			os.makedirs(self.output_path+'warped1')
+			os.makedirs(os.path.join(self.output_path, 'warped'))
+		if not os.path.exists(os.path.join(self.output_path, 'warped1')):
+			os.makedirs(os.path.join(self.output_path, 'warped1'))
 
 
 		#create warped directory in outputh path 

@@ -211,7 +211,7 @@ class SimpleRegister:
 				# print(cmd1)
 				# print(cmd2)	
 				#grid_job = self.grid_submit( cmd+cmd1+cmd2, '{}_{}_reg'.format(self.static_path.split('/')[-1][:4], i)) 
-				job_array.append(cmd)
+				job_array.append(Popen(cmd,stdout=PIPE))
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
 				count+=1
@@ -220,9 +220,11 @@ class SimpleRegister:
 						self.check_finished(job_array,0)
 						count=0
 		
-		for cmd in job_array:
-			proc = Popen(cmd,stdout=PIPE)
-			proc.wait()
+		# for cmd in job_array:
+		# 	proc = Popen(cmd,stdout=PIPE)
+		# 	proc.wait()
+
+
 		#f=open('cmd_array.txt','w')
 		#for i in cmd_array:
 			#for j in i:
@@ -230,13 +232,13 @@ class SimpleRegister:
 			#f.write('\n')
 		#f.close()
 		#input('done')
-
-		for i in range(len(self.files)):
-			proc1=Popen(job1_array[i][0],stdout=PIPE)
-			proc2=Popen(job1_array[i][1],stdout=PIPE)
-			proc1.wait()
-			proc2.wait()
-		self.file_handl.write(str(job1_array)+'\n')
+		if self.check_finished(job_array,0):
+			for i in range(len(self.files)):
+				proc1=Popen(job1_array[i][0],stdout=PIPE)
+				proc2=Popen(job1_array[i][1],stdout=PIPE)
+				proc1.wait()
+				proc2.wait()
+			self.file_handl.write(str(job1_array)+'\n')
 	#def run_it(self):
 
 		#for i in range(len(self.files)):

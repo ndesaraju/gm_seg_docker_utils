@@ -17,8 +17,8 @@ def gray_matter_seg(psir,roi,outputs_path, prefix=0):
 			else:
 				raise ValueError('rawr midnight 2 doesnt work')
 
-		else:
-			raise ValueError('rawr midnight doesnt work')
+		# else:
+		# 	raise ValueError('rawr midnight doesnt work')
 	else:
 		raise ValueError('rawr bulk doesnt work')
 def gray_matter_seg_no_preproc(psir,outputs_path,prefix=0):

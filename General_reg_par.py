@@ -212,17 +212,17 @@ class SimpleRegister:
 				# print(cmd2)	
 				#grid_job = self.grid_submit( cmd+cmd1+cmd2, '{}_{}_reg'.format(self.static_path.split('/')[-1][:4], i)) 
 				#job_array.append(Popen(cmd,stdout=PIPE))
-				job_array.append(Popen(cmd))
+				# job_array.append(Popen(cmd))
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
-				import pdb
-				pdb.set_trace()
+
 				count+=1
-				if gilroy:
-					if count>15:
-						self.check_finished(job_array,0)
-						count=0
-		
+				# if gilroy:
+				# 	if count>15:
+				# 		self.check_finished(job_array,0)
+				# 		count=0
+		import pdb
+		pdb.set_trace()
 		# for cmd in job_array:
 		# 	proc = Popen(cmd,stdout=PIPE)
 		# 	proc.wait()

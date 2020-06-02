@@ -222,8 +222,8 @@ class SimpleRegister:
 				# 	if count>15:
 				# 		self.check_finished(job_array,0)
 				# 		count=0
-		import pdb
-		pdb.set_trace()
+		# import pdb
+		# pdb.set_trace()
 		# for cmd in job_array:
 		# 	proc = Popen(cmd,stdout=PIPE)
 		# 	proc.wait()

@@ -215,6 +215,8 @@ class SimpleRegister:
 				job_array.append(Popen(cmd))
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
+				import pdb
+				pdb.set_trace()
 				count+=1
 				if gilroy:
 					if count>15:

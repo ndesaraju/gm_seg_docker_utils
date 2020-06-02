@@ -212,8 +212,8 @@ class SimpleRegister:
 				# print(cmd1)
 				# print(cmd2)	
 				#grid_job = self.grid_submit( cmd+cmd1+cmd2, '{}_{}_reg'.format(self.static_path.split('/')[-1][:4], i)) 
-				job_array.append(Popen(cmd,stdout=PIPE))
-				# job_array.append(Popen(cmd))
+				# job_array.append(Popen(cmd,stdout=PIPE))
+				job_array.append(Popen(cmd))
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
 				count+=1

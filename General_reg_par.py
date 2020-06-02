@@ -47,6 +47,7 @@ class SimpleRegister:
 			self.files=[os.path.basename(pth)]
 		else:
 			self.files = sorted([f for f in os.listdir(pth) if self.filter(f)])
+			self.files.remove(".DS_Store")
 		if pth2==None:
 			self.pth2=self.pth
 			self.files2=self.files

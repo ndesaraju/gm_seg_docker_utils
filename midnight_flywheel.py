@@ -22,8 +22,15 @@ def alter_ims(ima,mask,naming):
         if 'control' in ima:
                 prefix=os.path.basename(ima)[0:2]
         else:
-	
+            try:
                 prefix=c.get_mse(os.path.basename(ima))
+            except:
+                prefix=os.path.basename(cord).split("_")[0]
+        else:
+            pass
+        finally:
+            passtr
+                
         tmp=nb.load(mask)
         roi=tmp.get_data()
         tmp1=np.where(roi>.45,roi,0)
@@ -183,7 +190,8 @@ def run_this(static,outputs_path,prefix=0):
         except:
             continue
         try:
-            
+            import pdb
+            pdb.set_trace()
             argus.append(individual_correct(first,cord,target,'test',subject,outputs_path,file_handl))
             #output.append(individual_correct(first,cord,target,'test',subject,outputs_path))
         except:

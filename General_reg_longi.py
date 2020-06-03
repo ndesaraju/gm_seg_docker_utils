@@ -51,7 +51,8 @@ def Syn(arg,file_handl):
 	shrink_factors='4x1x1'
 	smoothing_sigmasr='1x1x1'
 	smoothing_sigmas='1x1x1'
-
+	import pdb
+	pdb.set_trace()
 	job_array=[]
 	job1_array=[]
 	for argum in arg:

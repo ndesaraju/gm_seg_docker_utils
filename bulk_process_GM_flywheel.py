@@ -309,9 +309,9 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
         nb.save(nb.Nifti1Image(color_im,aff.affine), os.path.join(outputs_path, '/quality_assurance/color_im.nii.gz'))
         nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, '/quality_assurance/original_line_fit.nii.gz'))
         return 1
-    except as e:
+    except:
         return 0
-        print(e)
+
 
 
 

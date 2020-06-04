@@ -3,7 +3,7 @@ import nibabel as nb
 import os
 def avgim(path,im=None):
 	try:
-		os.remove(path+'synslice_avggmsegs.nii.gz')
+		os.remove(os.path.join(path,'synslice_avggmsegs.nii.gz'))
 	except:
 		pass
 	#im is reference for affine
@@ -33,6 +33,6 @@ def avgim(path,im=None):
 	    print(path)
 	    img.to_filename(path)
 
-	savenii(avg/len(files),aff,path+'synslice_avggmsegs.nii.gz')
+	savenii(avg/len(files),aff,os.path.join(path,'synslice_avggmsegs.nii.gz'))
 	return avg/len(files)
 

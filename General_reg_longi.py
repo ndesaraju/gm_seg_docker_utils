@@ -56,9 +56,7 @@ def Syn(arg,file_handl):
 	job_array=[]
 	job1_array=[]
 	count = 0
-	print("syn grl args:")
 	for argum in arg:
-		print(argum)
 		files = argum[0] #altered with mse
 		output_path=argum[1] #registrations2
 		static_path=argum[2] #cor_raw_im

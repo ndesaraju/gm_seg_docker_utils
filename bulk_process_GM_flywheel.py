@@ -153,10 +153,10 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
     else:
         mse_static=prefix
     try:
-        os.remove(os.path.join(outputs_path,'/registrations1/warped/synslice_avggmsegs.nii.gz'))
+        os.remove(os.path.join(outputs_path,'registrations1/warped/synslice_avggmsegs.nii.gz'))
     except:
         pass
-    output_path=os.path.join(outputs_path, '/registrations1/')
+    output_path=os.path.join(outputs_path, 'registrations1/')
     dim=2
     static_path=static
     GRP.SimpleRegister(pth,output_path,static_path,file_handl,pth2=pth2).Syn(gilroy=True)
@@ -298,16 +298,16 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
         #nb.save(nb.Nifti1Image(slope,a.affine),'/data/henry4/jjuwono/slopes.nii.gz')
         #nb.save(nb.Nifti1Image(intercept,a.affine),'/data/henry4/jjuwono/intercepts.nii.gz')
         try:
-            os.mkdir(os.path.join(outputs_path, '/quality_assurance'))
+            os.mkdir(os.path.join(outputs_path, 'quality_assurance'))
         except:
             pass
 
-        nb.save(nb.Nifti1Image(confidences,aff.affine), os.path.join(outputs_path, '/quality_assurance/confidence.nii.gz'))
-        nb.save(nb.Nifti1Image(new_image,aff.affine), os.path.join(outputs_path, '/quality_assurance/new_image.nii.gz'))
-        nb.save(nb.Nifti1Image(new_image_logi,aff.affine), os.path.join(outputs_path, '/quality_assurance/new_image_logi.nii.gz'))
-        nb.save(nb.Nifti1Image(t_map,aff.affine), os.path.join(outputs_path, '/quality_assurance/t_map.nii.gz'))
-        nb.save(nb.Nifti1Image(color_im,aff.affine), os.path.join(outputs_path, '/quality_assurance/color_im.nii.gz'))
-        nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, '/quality_assurance/original_line_fit.nii.gz'))
+        nb.save(nb.Nifti1Image(confidences,aff.affine), os.path.join(outputs_path, 'quality_assurance/confidence.nii.gz'))
+        nb.save(nb.Nifti1Image(new_image,aff.affine), os.path.join(outputs_path, 'quality_assurance/new_image.nii.gz'))
+        nb.save(nb.Nifti1Image(new_image_logi,aff.affine), os.path.join(outputs_path, 'quality_assurance/new_image_logi.nii.gz'))
+        nb.save(nb.Nifti1Image(t_map,aff.affine), os.path.join(outputs_path, 'quality_assurance/t_map.nii.gz'))
+        nb.save(nb.Nifti1Image(color_im,aff.affine), os.path.join(outputs_path, 'quality_assurance/color_im.nii.gz'))
+        nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, 'quality_assurance/original_line_fit.nii.gz'))
         return 1
     except:
         return 0

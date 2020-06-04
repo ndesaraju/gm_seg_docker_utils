@@ -80,13 +80,13 @@ def Syn(arg,file_handl):
 			metric_str1='CC['+','.join([static_path,files[i],'1','3'])+']'
 			metric_str2='Mattes['+','.join([static_path,files[i],'1','32'])+']'
 
-			cmd=['antsRegistration','--dimensionality',str(dim),'--output',output_path+'warp'+os.path.basename(files[i]).split('.')[0],'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str2,'--convergence','[200x200x200,1e-6,10]','--shrink-factors','1x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','1x1x1','--smoothing-sigmas','1x1x1']
-			cmd1=['WarpImageMultiTransform',str(dim),files2[i],os.path.join(os.path.join(output_path, 'warped/'), os.path.basename(files2[i]).split('.')[0]+mse+mse2+'.nii.gz'), os.path.join(os.path.join(output_path,'warp'), os.path.basename(files[i]).split('.')[0]+'1Warp.nii.gz'), os.path.join(os.path.join(output_path, 'warp'), os.path.basename(files[i]).split('.')[0]+'0GenericAffine.mat'),'-R',static_path]
+			cmd=['antsRegistration','--dimensionality',str(dim),'--output',os.path.join(output_path,'warp'+ os.path.basename(files[i]).split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str2,'--convergence','[200x200x200,1e-6,10]','--shrink-factors','1x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','1x1x1','--smoothing-sigmas','1x1x1']
+			cmd1=['WarpImageMultiTransform',str(dim),files2[i],os.path.join(os.path.join(output_path, 'warped/'), os.path.basename(files2[i]).split('.')[0]+mse+mse2+'.nii.gz'), os.path.join(output_path,'warp'+os.path.basename(files[i]).split('.')[0]+'1Warp.nii.gz'), os.path.join(output_path, 'warp'+os.path.basename(files[i]).split('.')[0]+'0GenericAffine.mat'),'-R',static_path]
 			job_array.append(Popen(cmd))
 			count += 1
 			job1_array.append((cmd1))
 			if count>15:
-				self.check_finished(job_array,0)
+				check_finished(job_array,0)
 				count = 0
 	
 	# for cmd in job_array:
@@ -94,7 +94,7 @@ def Syn(arg,file_handl):
 	# 	proc.wait()
 
 
-	if self.check_finished(job_array,0):
+	if check_finished(job_array,0):
 		for i in range(len(job1_array)):
 			proc1=Popen(job1_array[i],stdout=PIPE)
 			proc1.wait()

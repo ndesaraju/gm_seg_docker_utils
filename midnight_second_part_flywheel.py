@@ -36,7 +36,6 @@ def hist_j(image):
         d[i]=d[i]+1
     return d
 def quantile_transform(image):
-    print("quantile transform 1")
     dat_array=image
     nonzer_dat=dat_array[np.where(dat_array>0)]
     unique_vals=sorted(set(nonzer_dat))
@@ -59,7 +58,6 @@ def quantile_transform(image):
             dat_array[i,j]=d[dat_array[i,j]]
     return dat_array
 def quantile_transform(image):
-    print("quantile transform 2")
     dat_array=image
     new_dats=np.zeros(dat_array.shape)
     nonzer_dat=dat_array[np.where(dat_array>0)]
@@ -141,7 +139,7 @@ def create_prob_seg_iteration3(template_grays,templates,image,file_handl):
                 file_handl.write(str(sys.exc_info())+'\n')
                 continue
             try:
-                print(c.get_ms(os.path.basename(i)),i)
+                #print(data_dict[c.get_ms(os.path.basename(i))],i)
                 fg=nb.load(data_dict[c.get_ms(os.path.basename(i))]).get_data()
             except:
                 print(sys.exc_info())
@@ -163,7 +161,7 @@ def scanner(x):
 
 #loop through input#
 def run_this(static,outputs_path,prefix=0):
-    file_handl=open(outputs_path+'/papers.txt','a')
+    file_handl=open(os.path.join(outputs_path, 'papers.txt'),'a')
     apply_warps=False
     if not(prefix): 
         if 'retest' in static:
@@ -177,11 +175,11 @@ def run_this(static,outputs_path,prefix=0):
     
 
     try:
-        os.remove(os.path.join(outputs_path, '/registrations2/warped/synslice_avggmsegs.nii.gz'))
+        os.remove(os.path.join(outputs_path, 'registrations2/warped/synslice_avggmsegs.nii.gz'))
     except:
         pass
 
-    output_path = os.path.join(outputs_path, '/registrations1/')
+    output_path = os.path.join(outputs_path, 'registrations1/')
 
   
     if apply_warps==True:
@@ -199,13 +197,13 @@ def run_this(static,outputs_path,prefix=0):
             print((fls,fls2))
             cmd1=['WarpImageMultiTransform',str(dim),files2[i],
                    os.path.join(os.path.join(output_path, 'warped/'), fls2.split('.')[0]+'.nii.gz'),
-                   os.path.join(os.path.join(output_path, 'warp') , fls.split('.')[0]+'1Warp.nii.gz'),
-                   os.path.join(os.path.join(output_path, 'warp'), fls.split('.')[0]+'0GenericAffine.mat'),
+                   os.path.join(output_path, 'warp'+fls.split('.')[0]+'1Warp.nii.gz'),
+                   os.path.join(output_path, 'warp'+fls.split('.')[0]+'0GenericAffine.mat'),
                    '-R',static_path, '\n']
             cmd2=['WarpImageMultiTransform',str(dim),files[i],
                    os.path.join(os.path.join(output_path, 'warped1/'), fls.split('.')[0]+'.nii.gz'),
-                   os.path.join(os.path.join(output_path, 'warp'), fls.split('.')[0]+'1Warp.nii.gz'),
-                   os.path.join(os.path.join(output_path, 'warp'), fls.split('.')[0]+'0GenericAffine.mat'),
+                   os.path.join(output_path, 'warp'+fls.split('.')[0]+'1Warp.nii.gz'),
+                   os.path.join(output_path, 'warp'+fls.split('.')[0]+'0GenericAffine.mat'),
                    '-R',static_path, '\n']
             proc=Popen(cmd1,stdout=PIPE)
             proc.wait()
@@ -214,18 +212,18 @@ def run_this(static,outputs_path,prefix=0):
             proc.wait()
 ###run process to grab distributions##
 
-    template_grays=glob(os.path.join(outputs_path, '/registrations2/warped/ms*.nii.gz'))
-    templates=glob(os.path.join(outputs_path, '/registrations1/warped1/ms*.nii.gz'))
+    template_grays=glob(os.path.join(outputs_path, 'registrations2/warped/ms*.nii.gz'))
+    templates=glob(os.path.join(outputs_path, 'registrations1/warped1/ms*.nii.gz'))
     fgs,distributions,a,adat,adat_raw=create_prob_seg_iteration3(template_grays,templates,static,file_handl) 
-    avgim(os.path.join(outputs_path, '/registrations2/warped/'))
+    avgim(os.path.join(outputs_path, 'registrations2/warped/'))
 ###run process to fit lines###
 
     
     aff=nb.load(static)
     adat_raw=nb.load(static).get_data()
-    first_tmap=nb.load(glob(os.path.join(outputs_path, '/quality_assurance/t_map.nii.gz'))[0]).get_data()
+    first_tmap=nb.load(glob(os.path.join(outputs_path, 'quality_assurance/t_map.nii.gz'))[0]).get_data()
     adat_z=z_score(adat,mapt=first_tmap)
-    mask=nb.load(glob(os.path.join(outputs_path, '/registrations2/warped/syn*'))[0]).get_data()
+    mask=nb.load(glob(os.path.join(outputs_path, 'registrations2/warped/syn*'))[0]).get_data()
 
     mask=np.where(mask>.6,mask,0)
     bar=np.mean(adat_z[np.where(mask>0)])
@@ -355,15 +353,15 @@ def run_this(static,outputs_path,prefix=0):
     #nb.save(nb.Nifti1Image(slope,a.affine),'/data/henry4/jjuwono/slopes.nii.gz')
     #nb.save(nb.Nifti1Image(intercept,a.affine),'/data/henry4/jjuwono/intercepts.nii.gz')
     try:
-        os.mkdir(os.path.join(outputs_path, '/final_output'))
+        os.mkdir(os.path.join(outputs_path, 'final_output'))
     except:
         pass
     #nb.save(nb.Nifti1Image(confidences,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/confidence.nii.gz')
     #nb.save(nb.Nifti1Image(new_image,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/new_image.nii.gz')
     #nb.save(nb.Nifti1Image(new_image_logi,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/new_image_logi.nii.gz')
-    nb.save(nb.Nifti1Image(t_map,aff.affine), os.path.join(outputs_path, '/final_output/rereg_t_map.nii.gz'))
+    nb.save(nb.Nifti1Image(t_map,aff.affine), os.path.join(outputs_path, 'final_output/rereg_t_map.nii.gz'))
     #nb.save(nb.Nifti1Image(color_im,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/color_im.nii.gz')
-    nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, '/final_output/rereg_original_line_fit.nii.gz'))
+    nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, 'final_output/rereg_original_line_fit.nii.gz'))
     return 1
 if __name__=='__main__':
     run_this('/data/henry4/jjuwono/outputs_mse2976/final_output/only_cordms1907-mse2976-010-C2_3_2Fl_seg_psir_TI_PSIR.nii.gz','/data/henry4/jjuwono/outputs_mse2976')

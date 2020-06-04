@@ -25,7 +25,7 @@ def alter_ims(ima,mask,naming):
             try:
                 prefix=c.get_mse(os.path.basename(ima))
             except:
-                prefix=os.path.basename(cord).split("_")[0]
+                prefix=os.path.basename(ima).split("_")[0]
 
         tmp=nb.load(mask)
         roi=tmp.get_data()

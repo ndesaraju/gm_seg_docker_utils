@@ -36,6 +36,7 @@ def hist_j(image):
         d[i]=d[i]+1
     return d
 def quantile_transform(image):
+    print("quantile transform 1")
     dat_array=image
     nonzer_dat=dat_array[np.where(dat_array>0)]
     unique_vals=sorted(set(nonzer_dat))
@@ -58,6 +59,7 @@ def quantile_transform(image):
             dat_array[i,j]=d[dat_array[i,j]]
     return dat_array
 def quantile_transform(image):
+    print("quantile transform 2")
     dat_array=image
     new_dats=np.zeros(dat_array.shape)
     nonzer_dat=dat_array[np.where(dat_array>0)]
@@ -139,7 +141,7 @@ def create_prob_seg_iteration3(template_grays,templates,image,file_handl):
                 file_handl.write(str(sys.exc_info())+'\n')
                 continue
             try:
-                #print(data_dict[c.get_ms(os.path.basename(i))],i)
+                print(c.get_ms(os.path.basename(i)),i)
                 fg=nb.load(data_dict[c.get_ms(os.path.basename(i))]).get_data()
             except:
                 print(sys.exc_info())
@@ -185,8 +187,8 @@ def run_this(static,outputs_path,prefix=0):
     if apply_warps==True:
         dim=2
         static_path=static
-        files=sorted(glob('/data/henry6/esha/Data/Interp_10/Current_Data/sharpened/*'))
-        files2=sorted(glob('/data/henry6/esha/Data/Masks_interp10/butterfly/all/*'))
+        files=sorted(glob('/flywheel/v0/input/pth/*'))
+        files2=sorted(glob('/flywheel/v0/input/pth2/*'))
         if not os.path.exists(os.path.join(output_path, 'warped1')):
             os.makedirs(os.path.join(self.output_path, 'warped1'))
         for i in range(len(files)):

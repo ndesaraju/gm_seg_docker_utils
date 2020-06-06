@@ -10,8 +10,8 @@ import nibabel as nb
 import numpy as np
 import sys
 
-pth='/flywheel/v0/input/pth/'
-pth2='/flywheel/v0/input/pth2/'
+pth='/flywheel/v0/pth'
+pth2='/flywheel/v0/pth2'
 
 psir_path = sys.argv[1]
 roi_path = sys.argv[2]

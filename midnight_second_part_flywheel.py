@@ -195,12 +195,12 @@ def run_this(static,outputs_path,prefix=0):
             fls=os.path.basename(files[i])
             fls2=os.path.basename(files2[i])
             print((fls,fls2))
-            cmd1=['WarpImageMultiTransform',str(dim),files2[i],
+            cmd1=['/opt/ants-2.3.1/WarpImageMultiTransform',str(dim),files2[i],
                    os.path.join(os.path.join(output_path, 'warped/'), fls2.split('.')[0]+'.nii.gz'),
                    os.path.join(output_path, 'warp'+fls.split('.')[0]+'1Warp.nii.gz'),
                    os.path.join(output_path, 'warp'+fls.split('.')[0]+'0GenericAffine.mat'),
                    '-R',static_path, '\n']
-            cmd2=['WarpImageMultiTransform',str(dim),files[i],
+            cmd2=['/opt/ants-2.3.1/WarpImageMultiTransform',str(dim),files[i],
                    os.path.join(os.path.join(output_path, 'warped1/'), fls.split('.')[0]+'.nii.gz'),
                    os.path.join(output_path, 'warp'+fls.split('.')[0]+'1Warp.nii.gz'),
                    os.path.join(output_path, 'warp'+fls.split('.')[0]+'0GenericAffine.mat'),

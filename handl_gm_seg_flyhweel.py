@@ -25,7 +25,6 @@ def gray_matter_seg(psir,roi,outputs_path, prefix=0):
 				tmf.run_this(cordpth,outputs_path, prefix)
 			else:
 				raise ValueError('rawr midnight 2 doesnt work')
-
 		else:
 			raise ValueError('rawr midnight doesnt work')
 	else:

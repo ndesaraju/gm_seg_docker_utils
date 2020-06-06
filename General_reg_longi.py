@@ -100,13 +100,6 @@ def Syn(arg,file_handl):
 			
 
 
-if __name__=='__main__':
-
-	Syn([(['/data/henry4/jjuwono/new_GM_method_flywheel/ms1954PSIR_retest_GE/working/altered.nii.gz'], '/data/henry4/jjuwono/new_GM_method_flywheel/ms1954PSIR_retest_GE/registrations2/', '/data/henry4/jjuwono/new_GM_method_flywheel/ms1954PSIR_retest_GE/quality_assurance/cor_raw_im.nii.gz', 'ms1954retest_GE', None, ['/data/henry4/jjuwono/new_GM_method_flywheel/ms1954PSIR_retest_GE/registrations1/warped/ms1684_butterfly_image.nii.gz'], None)])
-
-
-
-
 
 
 

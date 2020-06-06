@@ -363,7 +363,3 @@ def run_this(static,outputs_path,prefix=0):
     #nb.save(nb.Nifti1Image(color_im,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/color_im.nii.gz')
     nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, 'final_output/rereg_original_line_fit.nii.gz'))
     return 1
-if __name__=='__main__':
-    run_this('/data/henry4/jjuwono/outputs_mse2976/final_output/only_cordms1907-mse2976-010-C2_3_2Fl_seg_psir_TI_PSIR.nii.gz','/data/henry4/jjuwono/outputs_mse2976')
-    
-

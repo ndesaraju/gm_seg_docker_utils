@@ -221,20 +221,7 @@ class SimpleRegister:
 					if count>15:
 						self.check_finished(job_array,0)
 						count=0
-		# import pdb
-		# pdb.set_trace()
-		# for cmd in job_array:
-		# 	proc = Popen(cmd,stdout=PIPE)
-		# 	proc.wait()
 
-
-		#f=open('cmd_array.txt','w')
-		#for i in cmd_array:
-			#for j in i:
-				#f.write(j+'rawr')
-			#f.write('\n')
-		#f.close()
-		#input('done')
 		if self.check_finished(job_array,0):
 			for i in range(len(self.files)):
 				proc1=Popen(job1_array[i][0],stdout=PIPE)
@@ -242,54 +229,4 @@ class SimpleRegister:
 				proc1.wait()
 				proc2.wait()
 			self.file_handl.write(str(job1_array)+'\n')
-	#def run_it(self):
 
-		#for i in range(len(self.files)):
-			#print(self.files[i],self.files2[i])
-			#fil=self.files[i]
-			#fil2=self.files2[i]
-			#self.Syn(fil,fil2)
-		#zipper=zip(self.files,self.files2)
-
-		#pool = mp.Pool(mp.cpu_count())
-		#print(mp.cpu_count())
-		#results = [pool.apply(self.Syn, args=(fil, fil2)) for fil,fil2 in zipper]
-		#pool.close()
-		
-if __name__ == '__main__':
-	gm_flag=input('is this for GM_seg Y/N: ')
-	if gm_flag.upper()=='Y':
-		import crop_zoom_to_roi as crop_zoom
-		        
-	pth=input('path for images to register: ')
-	output_path=input('folder to create for outputs: ')
-	static_path=input('fixed image: ')
-	gm_flag=input('is this for GM_seg Y/N: ')
-	if gm_flag.upper()=='Y':
-		import crop_zoom_to_roi as crop_zoom
-		roi_file=input('roi file: ')
-		crop_zoom.create_zoomed_files(static_path,roi_file)
-		
-	if input('filter Y/N: ').upper()=='Y':
-		filt=input('filter name: ')
-	else:
-		filt=None
-	if input('applying on different iamges? Y/N: ').upper()=='Y':
-		pth2=input('path to apply to: ')
-
-		if input('filter Y/N: ').upper()=='Y':
-			filt2=input('filter name: ')
-
-		else:
-			filt2=None
-
-		SimpleRegister(pth,output_path,static_path,lamb=filt,pth2=pth2,lamb2=filt2).affine()
-	else:
-	#put lambdas here
-
-		SimpleRegister(pth,output_path,static_path,lamb=filt).affine()
-
-
-
-	#REGINALD = SimpleRegister('/data/henry2/arajesh/', '/data/henry2/arajesh', '/data/henry2/arajesh')
-	#REGINALD.grid_submit(shell_cmd='ls', job_name='BIGBOIIII')

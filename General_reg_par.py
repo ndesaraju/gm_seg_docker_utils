@@ -12,6 +12,7 @@ import numpy as np
 import nibabel as nib
 import multiprocessing as mp
 import logging as log
+from subprocess import check_output
 
 
 class SimpleRegister:
@@ -61,6 +62,8 @@ class SimpleRegister:
 		log.info('cycle:{}'.format(cycle))
 		printer=[]
 		sleep(90)
+		out = check_output(["ps","-aux"])
+		log.info(out)
 		fin=0
 		# import pdb
 		for i in ind:

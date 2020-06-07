@@ -14,10 +14,14 @@ from collections import defaultdict
 from glob import glob
 from time import sleep
 import logging as log
+from subprocess import check_output
+
 def check_finished(ind,cycle):
 	log.info('cycle:{}'.format(cycle))
 	printer=[]
 	sleep(90)
+	out = check_output(["ps","-aux"])
+	log.info(out)
 	fin=0
 	for i in ind:
 		printer.append(i.poll())

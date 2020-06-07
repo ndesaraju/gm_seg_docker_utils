@@ -11,18 +11,18 @@ from time import sleep
 import numpy as np
 import nibabel as nib
 import multiprocessing as mp
-
+import logging as log
 
 
 class SimpleRegister:
 	def __init__(self,pth,output_path,static_path,file_handl,lamb=None,pth2=None,lamb2=None):
 		if lamb != None:
-			print(lamb)
+			log.info(lamb)
 			exec('from '+lamb+ ' import '+lamb,globals())
-			print(every6('asdf'))
+			log.info(every6('asdf'))
 			exec('lambs='+lamb,globals())
 			
-			print(type(lambs))
+			log.info(type(lambs))
 		else:
 			exec('lambs=lambda x:True',globals())
 			 #lambs=lambda x:True
@@ -58,7 +58,7 @@ class SimpleRegister:
 
 
 	def check_finished(self,ind,cycle):
-		print('cycle:{}'.format(cycle))
+		log.info('cycle:{}'.format(cycle))
 		printer=[]
 		sleep(90)
 		fin=0
@@ -68,8 +68,8 @@ class SimpleRegister:
 			printer.append(i.poll())
 			if i.poll()==None:
 				fin=fin+1
-		print(printer)
-		print('{}/{} processes finished'.format(len(ind)-fin,len(ind)))
+		log.info(printer)
+		log.info('{}/{} processes finished'.format(len(ind)-fin,len(ind)))
 		if fin>0:
 			return self.check_finished(ind,cycle+1)
 		return True
@@ -96,7 +96,7 @@ class SimpleRegister:
 
 		for i in range(len(self.files)):
 
-			print(i)
+			log.info(i)
 			metric_str='MI['+','.join([self.static_path,os.path.join(self.pth, self.files[i]),'1','32'])+']'
 
 			cmd=['/opt/ants-2.3.1/antsRegistration','--dimensionality',str(dim),'--output', os.path.join(os.path.join(self.output_path, 'warp'), self.files[i].split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas)]
@@ -118,7 +118,7 @@ class SimpleRegister:
 
 		for i in range(len(self.files)):
 
-			print(i)
+			log.info(i)
 			metric_str='MI['+','.join([self.static_path,os.path.join(self.pth,self.files[i]),'1','32'])+']'
 			#metric_str='CC['+','.join([self.static_path,self.pth+self.files[i],'1','2'])+']'
 
@@ -147,8 +147,8 @@ class SimpleRegister:
 			if self.files[i]==os.path.basename(self.static_path):
 				rawr=rawr+1
 				continue
-			print('poopity_scoop')
-			print(self.files[i])
+			log.info('poopity_scoop')
+			log.info(self.files[i])
 			metric_strm='MI['+','.join([self.static_path,os.path.join(self.pth,self.files[i]),'1','32','Regular','0.25'])+']'
 			metric_str='CC['+','.join([self.static_path,os.path.join(self.pth, self.files[i]),'0.4','8','Regular','0.5'])+']'
 

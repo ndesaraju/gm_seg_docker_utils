@@ -101,7 +101,7 @@ def run_this(static,outputs_path,prefix=0):
     else:
         subject=prefix
         
-    print('#########{}######{}'.format(subject,subject))
+    log.info('#########{}######{}'.format(subject,subject))
     file_handl.write('#########{}######{}\n'.format(subject,subject))
     registrations=sorted(glob(os.path.join(outputs_path, 'registrations1/warped/*.nii.gz')))
     try:
@@ -144,7 +144,7 @@ def run_this(static,outputs_path,prefix=0):
     for dicting in range(max((len(registrations),len(cord_registrations)))):
         try:
             poop=int(os.path.basename(registrations[dicting])[0])
-            print(poop)
+            log.info(poop)
             data_dict[os.path.basename(registrations[dicting]).split('_')[0]]=[registrations[dicting]]
             continue
         except:

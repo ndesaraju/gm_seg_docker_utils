@@ -45,8 +45,8 @@ def quantile_transform(image):
     normal_data=[dist.pdf(step*(-1*int(len(unique_vals)/2)+x)) for x in range(len(unique_vals))]
     
     new_nums=[]
-    print(len(normal_data))
-    print(len(unique_vals))
+    log.info(len(normal_data))
+    log.info(len(unique_vals))
     d={}
     for i in range(len(unique_vals)):
         d[unique_vals[i]]=normal_data[i]
@@ -135,14 +135,14 @@ def create_prob_seg_iteration3(template_grays,templates,image,file_handl):
                 #print('here')
                 z=z_score(temp)
             except:
-                print(sys.exc_info())
+                log.info(sys.exc_info())
                 file_handl.write(str(sys.exc_info())+'\n')
                 continue
             try:
                 #print(data_dict[c.get_ms(os.path.basename(i))],i)
                 fg=nb.load(data_dict[c.get_ms(os.path.basename(i))]).get_data()
             except:
-                print(sys.exc_info())
+                log.info(sys.exc_info())
                 file_handl.write(str(sys.exc_info())+'\n')
                 continue
             distributions.append(z)
@@ -170,7 +170,7 @@ def run_this(static,outputs_path,prefix=0):
             subject=c.get_mse(static)+scanner(static)
     else:
          subject=prefix
-    print('#########{}######{}'.format(subject,subject))
+    log.info('#########{}######{}'.format(subject,subject))
     mse=subject
     
 
@@ -194,7 +194,7 @@ def run_this(static,outputs_path,prefix=0):
                 continue
             fls=os.path.basename(files[i])
             fls2=os.path.basename(files2[i])
-            print((fls,fls2))
+            log.info((fls,fls2))
             cmd1=['/opt/ants-2.3.1/WarpImageMultiTransform',str(dim),files2[i],
                    os.path.join(os.path.join(output_path, 'warped/'), fls2.split('.')[0]+'.nii.gz'),
                    os.path.join(output_path, 'warp'+fls.split('.')[0]+'1Warp.nii.gz'),

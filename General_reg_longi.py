@@ -14,7 +14,7 @@ from collections import defaultdict
 from glob import glob
 from time import sleep
 def check_finished(ind,cycle):
-	print('cycle:{}'.format(cycle))
+	log.info('cycle:{}'.format(cycle))
 	printer=[]
 	sleep(90)
 	fin=0
@@ -22,8 +22,8 @@ def check_finished(ind,cycle):
 		printer.append(i.poll())
 		if i.poll()==None:
 			fin=fin+1
-	print(printer)
-	print('{}/{} processes finished'.format(len(ind)-fin,len(ind)))
+	log.info(printer)
+	log.info('{}/{} processes finished'.format(len(ind)-fin,len(ind)))
 	if fin>0:
 		return check_finished(ind,cycle+1)
 	return True

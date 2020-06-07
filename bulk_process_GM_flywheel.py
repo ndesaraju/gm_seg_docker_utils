@@ -16,6 +16,7 @@ from scipy.optimize import curve_fit
 from avgim import avgim
 ##just to apply warps to cord and mask iamges##
 import General_reg_par as GRP
+import logging as log
 
 def sigmoid(x,x0,k,y0):
     y = 1 / (1 + np.exp(-k*(x-x0))) + y0
@@ -159,6 +160,7 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
     output_path=os.path.join(outputs_path, 'registrations1/')
     dim=2
     static_path=static
+    log.info("about to start first round of registrations!")
     GRP.SimpleRegister(pth,output_path,static_path,file_handl,pth2=pth2).Syn(gilroy=True)
     file_handl.write(str(static)+'\n')
     

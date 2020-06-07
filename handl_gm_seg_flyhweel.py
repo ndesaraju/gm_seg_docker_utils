@@ -9,6 +9,7 @@ from glob import glob
 import nibabel as nb
 import numpy as np
 import sys
+import logging as log
 
 pth='/flywheel/v0/pth/'
 pth2='/flywheel/v0/pth2/'
@@ -19,6 +20,7 @@ output_path = sys.argv[3]
 
 def gray_matter_seg(psir,roi,outputs_path, prefix=0):
 	cord,crop_aff,cordpth=crz.create_zoomed_files(psir, roi,outputs_path)
+	log.info("created zoomed files")
 	if bulk.run_this(cordpth,outputs_path,pth,pth2, prefix):
 		if not mn.run_this(cordpth,outputs_path, prefix):
 			if mn2.run_this(cordpth,outputs_path, prefix):

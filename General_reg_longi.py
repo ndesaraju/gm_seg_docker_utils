@@ -13,6 +13,7 @@ import nibabel as nib
 from collections import defaultdict
 from glob import glob
 from time import sleep
+import logging as log
 def check_finished(ind,cycle):
 	log.info('cycle:{}'.format(cycle))
 	printer=[]

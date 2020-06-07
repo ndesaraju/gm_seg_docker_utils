@@ -26,6 +26,7 @@ from scipy.optimize import curve_fit
 from avgim import avgim
 ##just to apply warps to cord and mask iamges##
 from scipy.optimize import curve_fit
+import logging as log
 
 def sigmoid(x,x0,k,y0):
     y = 1 / (1 + np.exp(-k*(x-x0))) + y0

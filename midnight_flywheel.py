@@ -16,6 +16,7 @@ from multiprocessing import Pool
 from collections import defaultdict
 #import cord_seg_clean as cord
 import random
+import logging as log
 #used to individually correct from the gray matter algorithm most recent June 2019
 def alter_ims(ima,mask,naming):
 

@@ -10,6 +10,7 @@ import os
 import sys
 import argparse
 import math
+import logging as log
 def get_dimension(msid):
     import pandas as pd
     from subprocess import Popen,PIPE, check_output

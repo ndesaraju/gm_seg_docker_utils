@@ -13,7 +13,7 @@ import math
 def get_dimension(msid):
     import pandas as pd
     from subprocess import Popen,PIPE, check_output
-    check_output(['which', 'fslhd'])
+    check_output(['echo', '$PATH'])
     cmd = ["/opt/fsl-5.0.10/bin/fslinfo",msid]
     proc = Popen(cmd, stdout=PIPE)
     lines = [l.decode("utf-8").split() for l in proc.stdout.readlines()[5:]]

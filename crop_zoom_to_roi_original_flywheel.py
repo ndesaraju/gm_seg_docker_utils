@@ -14,8 +14,8 @@ import logging as log
 def get_dimension(msid):
     import pandas as pd
     from subprocess import Popen,PIPE, check_output
-    # cmd = ["/opt/fsl-5.0.10/bin/fslinfo",msid]
-    cmd = ["fslinfo",msid]
+    cmd = ["/opt/fsl-5.0.10/bin/fslinfo",msid]
+    # cmd = ["fslinfo",msid]
     proc = Popen(cmd, stdout=PIPE)
     lines = [l.decode("utf-8").split() for l in proc.stdout.readlines()[5:]]
     d={}

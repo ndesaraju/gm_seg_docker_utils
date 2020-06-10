@@ -16,7 +16,8 @@ def get_dimension(msid):
     from subprocess import Popen,PIPE, check_output
     log.info(check_output(['echo', '$PATH']))
     # cmd = ["/opt/fsl-5.0.10/bin/fslinfo",msid]
-    cmd = ["fslinfo",msid]
+    cmd = ["/opt/fsl-5.0.10/bin/fslhd",msid]
+    # cmd = ["fslhd",msid]
     proc = Popen(cmd, stdout=PIPE)
     lines = [l.decode("utf-8").split() for l in proc.stdout.readlines()[5:]]
     d={}

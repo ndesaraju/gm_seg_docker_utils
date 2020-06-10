@@ -21,7 +21,7 @@ def get_dimension(msid):
     proc = Popen(cmd, stdout=PIPE)
     lines = [l.decode("utf-8").split() for l in proc.stdout.readlines()[5:]]
     d={}
-    for i in lines:
+    for i in lines[:20]:
         d[i[0]]=i[1]
     dim1=d['pixdim1']
     dim2=d['pixdim2']

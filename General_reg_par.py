@@ -200,7 +200,7 @@ class SimpleRegister:
 			if self.files[i] != '.DS_Store':
 				fil=self.files[i]
 				fil2=self.files2[i]
-				log.info("made it further")
+				# log.info("made it further")
 				# self.static_path is fixed img, self.files[i] is moving img
 				# print(self.pth)
 				# print(os.path.join(self.pth,fil))

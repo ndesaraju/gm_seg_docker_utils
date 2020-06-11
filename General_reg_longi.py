@@ -21,7 +21,7 @@ def check_finished(ind,cycle):
 	printer=[]
 	sleep(90)
 	out = check_output(["ps","-aux"])
-	log.info(out)
+	# log.info(out)
 	fin=0
 	for i in ind:
 		printer.append(i.poll())

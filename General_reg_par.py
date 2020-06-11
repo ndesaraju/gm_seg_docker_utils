@@ -63,7 +63,7 @@ class SimpleRegister:
 		printer=[]
 		sleep(90)
 		out = check_output(["ps","-aux"])
-		log.info(out)
+		# log.info(out)
 		fin=0
 		# import pdb
 		for i in ind:
@@ -210,7 +210,7 @@ class SimpleRegister:
 				# print(self.output_path,os.path.join(self.pth, fil),os.path.join(self.pth2,fil2))
 
 				cmd=['/opt/ants-2.3.1/antsRegistration', '--dimensionality',str(dim),'--output',os.path.join(self.output_path,'warp'+fil.split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
-				log.info(cmd)
+				# log.info(cmd)
 				# print(cmd)
 				cmd1=['/opt/ants-2.3.1/WarpImageMultiTransform',str(dim),os.path.join(self.pth2,fil2),os.path.join(os.path.join(self.output_path,'warped/'), fil2.split('.')[0]+'.nii.gz'),os.path.join(self.output_path, 'warp'+fil.split('.')[0]+'1Warp.nii.gz'),os.path.join(self.output_path,'warp'+fil.split('.')[0]+'0GenericAffine.mat'),'-R',self.static_path]
 				cmd2=['/opt/ants-2.3.1/WarpImageMultiTransform',str(dim),os.path.join(self.pth,fil),os.path.join(os.path.join(self.output_path,'warped1/'), fil.split('.')[0]+'.nii.gz'),os.path.join(self.output_path,'warp'+fil.split('.')[0]+'1Warp.nii.gz'),os.path.join(self.output_path, 'warp'+fil.split('.')[0]+'0GenericAffine.mat'),'-R',self.static_path]

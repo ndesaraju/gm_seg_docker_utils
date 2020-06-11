@@ -195,7 +195,7 @@ class SimpleRegister:
 		job1_array=[]
 		cmd_array=[]
 		count=0
-		log.info("made it here")
+		# log.info("made it here")
 		for i in range(len(self.files)):
 			if self.files[i] != '.DS_Store':
 				fil=self.files[i]

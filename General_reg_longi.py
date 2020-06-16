@@ -88,9 +88,9 @@ def Syn(arg,file_handl):
 			job_array.append(Popen(cmd))
 			count += 1
 			job1_array.append((cmd1))
-			if count>15:
-				check_finished(job_array,0)
-				count = 0
+			# if count>15:
+			# 	check_finished(job_array,0)
+			# 	count = 0
 	
 	# for cmd in job_array:
 	# 	proc = Popen(cmd,stdout=PIPE)

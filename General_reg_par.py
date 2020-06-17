@@ -65,7 +65,7 @@ class SimpleRegister:
 		printer=[]
 		sleep(90)
 		out = check_output(["ps","-aux"])
-		log.info(out)
+		# log.info(out)
 		fin=0
 		# import pdb
 		count = 0
@@ -77,10 +77,10 @@ class SimpleRegister:
 						sleep(1)
 					out.append(i.stdout.readlines())
 			# pdb.set_trace()
-			f = open('/flywheel/v0/output/{}_error.txt'.format(count), 'w')
-			for line in out:
-				f.write(line.decode('utf-8'))
-			f.close()
+				f = open('/flywheel/v0/output/{}_error.txt'.format(count), 'w')
+				for line in out:
+					f.write(line.decode('utf-8'))
+				f.close()
 			printer.append(i.poll())
 			if i.poll()==None:
 				fin=fin+1

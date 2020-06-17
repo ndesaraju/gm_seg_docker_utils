@@ -65,7 +65,7 @@ class SimpleRegister:
 		printer=[]
 		sleep(90)
 		out = check_output(["ps","-aux"])
-		# log.info(out)
+		log.info(out)
 		fin=0
 		# import pdb
 		count = 0
@@ -224,8 +224,8 @@ class SimpleRegister:
 				metric_str2='Mattes['+','.join([self.static_path,os.path.join(self.pth,fil),'1','32'])+']'
 				# print(self.output_path,os.path.join(self.pth, fil),os.path.join(self.pth2,fil2))
 
-				# cmd=['/opt/ants-2.3.1/antsRegistration', '-v','--dimensionality',str(dim),'--output',os.path.join(self.output_path,'warp'+fil.split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
-				cmd=['/opt/ants-2.3.1/antsRegistration', '--dimensionality',str(dim),'--output',os.path.join(self.output_path,'warp'+fil.split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
+				cmd=['/opt/ants-2.3.1/antsRegistration', '-v','--dimensionality',str(dim),'--output',os.path.join(self.output_path,'warp'+fil.split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
+				# cmd=['/opt/ants-2.3.1/antsRegistration', '--dimensionality',str(dim),'--output',os.path.join(self.output_path,'warp'+fil.split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
 
 				# log.info(cmd)
 				# print(cmd)
@@ -234,8 +234,8 @@ class SimpleRegister:
 				# print(cmd1)
 				# print(cmd2)	
 				#grid_job = self.grid_submit( cmd+cmd1+cmd2, '{}_{}_reg'.format(self.static_path.split('/')[-1][:4], i)) 
-				# job_array.append(Popen(cmd,stdout=PIPE))
-				job_array.append(Popen(cmd))
+				job_array.append(Popen(cmd, stdout=PIPE))
+				# job_array.append(Popen(cmd))
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
 				count+=1

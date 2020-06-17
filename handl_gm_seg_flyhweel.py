@@ -19,7 +19,7 @@ roi_path = sys.argv[2]
 output_path = sys.argv[3]
 
 def gray_matter_seg(psir,roi,outputs_path, prefix=0):
-	cord,crop_aff,cordpth=crz.create_zoomed_files(psir, roi,outputs_path)
+	cord,crop_aff,cordpth=crz.create_nifti_zoomed(psir, roi,outputs_path)
 	log.info("created zoomed files")
 	if bulk.run_this(cordpth,outputs_path,pth,pth2, prefix):
 		if not mn.run_this(cordpth,outputs_path, prefix):

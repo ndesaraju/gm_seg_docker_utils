@@ -51,7 +51,7 @@ def get_ms(string):
                 try:
                         i=sp.index('ms')
                 except:
-                	return ""
+                		return ""
                         raise ValueError(string+' no mse found')
                 sp=sp[i+2:]
                 n=subsequent_nums(sp)

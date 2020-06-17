@@ -59,8 +59,8 @@ class SimpleRegister:
 
 
 	def check_finished(self,ind,cycle):
-		import pdb
-		pdb.set_trace()
+		# import pdb
+		# pdb.set_trace()
 		log.info('cycle:{}'.format(cycle))
 		printer=[]
 		sleep(90)
@@ -203,7 +203,7 @@ class SimpleRegister:
 
 
 		#create warped directory in outputh path 
-
+		# log.info("made it")
 		# instantiate array that will be filled with jobs
 		job_array = []
 		job1_array=[]
@@ -236,10 +236,10 @@ class SimpleRegister:
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
 				count+=1
-				if gilroy:
-					if count>1:
-						self.check_finished(job_array,0)
-						count=0
+				# if gilroy:
+				# 	if count>15:
+				# 		self.check_finished(job_array,0)
+				# 		count=0
 
 		if self.check_finished(job_array,0):
 			for i in range(len(self.files)):

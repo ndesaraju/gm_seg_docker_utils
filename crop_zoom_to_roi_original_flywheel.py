@@ -133,8 +133,8 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     # settings
     numvox = cropdist*2*scalefac
     bsp_order=2
-    import pdb
-    pdb.set_trace()
+    # import pdb
+    # pdb.set_trace()
     cord_nifti_affine, cord_nifti_data = load(cord_nifti)
     # FLIP SIGN OF Y
     

@@ -239,10 +239,10 @@ class SimpleRegister:
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
 				count+=1
-				if gilroy:
-					if count>10:
-						self.check_finished(job_array,0)
-						count=0
+				# if gilroy:
+				# 	if count>10:
+				# 		self.check_finished(job_array,0)
+				# 		count=0
 
 		if self.check_finished(job_array,0):
 			for i in range(len(self.files)):

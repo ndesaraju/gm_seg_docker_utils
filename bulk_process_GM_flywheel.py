@@ -148,9 +148,9 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
     pass_on=[]
     if not(prefix):
         if 'retest' in static:
-            mse_static=c.get_ms(static)+'PSIR_retest'+scanner(static)
+            mse_static=c.get_mse(static)+'PSIR_retest'+scanner(static)
         else:
-            mse_static=c.get_ms(static)+'PSIR_'+scanner(static)
+            mse_static=c.get_mse(static)+'PSIR_'+scanner(static)
     else:
         mse_static=prefix
     try:

@@ -59,6 +59,8 @@ class SimpleRegister:
 
 
 	def check_finished(self,ind,cycle):
+		import pdb
+		pdb.set_trace()
 		log.info('cycle:{}'.format(cycle))
 		printer=[]
 		sleep(90)
@@ -84,6 +86,7 @@ class SimpleRegister:
 			count+=1
 		log.info(printer)
 		log.info('{}/{} processes finished'.format(len(ind)-fin,len(ind)))
+		pdb.set_trace()
 		if fin>0:
 			return self.check_finished(ind,cycle+1)
 		return True

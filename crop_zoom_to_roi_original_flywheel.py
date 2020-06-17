@@ -197,10 +197,10 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
         os.mkdir(os.path.join(outputs_path,"final_output"))
     try:
         os.mkdir(outputs_path)
-        os.mkdir(outputs_path+'/final_output')
+        os.mkdir(0s.path.joing(outputs_path, 'final_output'))
     except:
         pass
-    cordpth=outputs_path+'/final_output/only_cord'+os.path.basename(psir)
+    cordpth=os.path.join(outputs_path, 'final_output/only_cord_'+os.path.basename(psir))
     cordsave=nib.save(nib.Nifti1Image(cord,crop_aff),cordpth)
     
     return cord,crop_aff,cordpth

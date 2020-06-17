@@ -49,10 +49,9 @@ def get_ms(string):
         sp=string
         while True:
                 try:
-                        i=sp.index('ms')
+                	i=sp.index('ms')
                 except:
-                		return ""
-                        raise ValueError(string+' no mse found')
+                	raise ValueError(string+' no mse found')
                 sp=sp[i+2:]
                 n=subsequent_nums(sp)
                 if len(n)>0:

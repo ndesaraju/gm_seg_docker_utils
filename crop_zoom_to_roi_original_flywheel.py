@@ -180,8 +180,8 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
 
     # MAKE CORD IMAGE
     #print('cord_mask:{} zoomed: {}'.format(cord_mask.shape,zoomed.shape))
-    mask_shape = len(zoomed_cord_mask.shape())
-    cord_shape = len(zoomed.shape())
+    mask_shape = len(np.shape(zoomed_cord_mask))
+    cord_shape = len(np.shape(zoomed))
     if mask_shape == 2 and cord_shape == 2:
         cord = np.multiply(zoomed_cord_mask[:,:], zoomed[:,:])
     elif mask_shape == 3 and cord_shape == 3:

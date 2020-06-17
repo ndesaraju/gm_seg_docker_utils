@@ -74,7 +74,7 @@ class SimpleRegister:
 			for n in np.arange(20):
 				if n % 2 == 0:
 					sleep(1)
-				out.append(i.stdout.readline())
+				out.append(i.stdout.readlines())
 			# pdb.set_trace()
 			f = open('/flywheel/v0/output/{}_error.txt'.format(count), 'w')
 			for line in out:

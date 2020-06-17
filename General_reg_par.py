@@ -66,11 +66,22 @@ class SimpleRegister:
 		log.info(out)
 		fin=0
 		# import pdb
+		count = 0
 		for i in ind:
+			out = []
+			for n in np.arange(20):
+				if n % 2 == 0:
+					sleep(1)
+				out.append(i.stdout.readline())
 			# pdb.set_trace()
+			f = open('/flywheel/v0/output/{}_error.txt'.format(count), 'w')
+			for line in out:
+				f.write(line.decode('utf-8'))
+			f.close()
 			printer.append(i.poll())
 			if i.poll()==None:
 				fin=fin+1
+			count+=1
 		log.info(printer)
 		log.info('{}/{} processes finished'.format(len(ind)-fin,len(ind)))
 		if fin>0:
@@ -222,10 +233,10 @@ class SimpleRegister:
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
 				count+=1
-				if gilroy:
-					if count>15:
-						self.check_finished(job_array,0)
-						count=0
+				# if gilroy:
+				# 	if count>15:
+				# 		self.check_finished(job_array,0)
+				# 		count=0
 
 		if self.check_finished(job_array,0):
 			for i in range(len(self.files)):

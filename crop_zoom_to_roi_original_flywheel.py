@@ -115,7 +115,7 @@ def create_zoomed_files(psir, roi,outputs_path,slic=-1):
     
     return cord,crop_aff,cordpth
 
-def create_nifti_zoomed(psir, cord_nifti, outputs_path slic=-1):
+def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     psir_affine, psir_data = load(psir)
     x_res = psir_affine[0,0]
     y_res = psir_affine[1,1]

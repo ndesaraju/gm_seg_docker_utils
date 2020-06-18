@@ -119,7 +119,7 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     psir_affine, psir_data = load(psir)
     psir_shape = np.shape(psir_data)
     try:
-        tmp = np.ceil(psir_shape[2]/2)
+        int(tmp) = np.ceil(psir_shape[2]/2)
         psir_data = psir_data[:,:,tmp-1]
     except:
         pass
@@ -142,7 +142,7 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     cord_nifti_affine, cord_nifti_data = load(cord_nifti)
     cord_shape = np.shape(cord_nifti_data)
     try:
-        tmp = np.ceil(cord_shape[2]/2)
+        int(tmp) = np.ceil(cord_shape[2]/2)
         cord_nifti_data = cord_nifti_data[:,:,tmp-1]
     except:
         pass

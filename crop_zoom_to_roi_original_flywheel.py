@@ -127,7 +127,7 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     y_res = psir_affine[1,1]
     x_res,y_res=get_dimension(psir)
     #print(psir_data.shape)
-    
+    print(psir_data.shape)
     x_dim, y_dim = psir_data.shape
 
     # COMPUTE SCALE FACTOR AND CROP DISTANCE

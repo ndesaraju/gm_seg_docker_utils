@@ -67,8 +67,8 @@ class SimpleRegister:
 		out = check_output(["ps","-aux"])
 		log.info(out)
 		fin=0
-		import pdb
-		pdb.set_trace()
+		# import pdb
+		# pdb.set_trace()
 		count = 0
 		for i in ind:
 			out = []
@@ -79,7 +79,9 @@ class SimpleRegister:
 					out.append(i.stdout.readlines())
 			# pdb.set_trace()
 				f = open('/flywheel/v0/output/{}_error.txt'.format(count), 'w')
+				print(out)
 				for line in out:
+					print(line)
 					f.write(line.decode('utf-8'))
 				f.close()
 			printer.append(i.poll())

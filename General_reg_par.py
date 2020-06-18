@@ -76,12 +76,12 @@ class SimpleRegister:
 				for n in np.arange(20):
 					if n % 2 == 0:
 						sleep(1)
-					out.append(i.stdout.readlines())
+					out.append(i.stdout.readline())
 			# pdb.set_trace()
 				f = open('/flywheel/v0/output/{}_error.txt'.format(count), 'w')
-				print(out)
+				# print(out)
 				for line in out:
-					print(line)
+					# print(line)
 					f.write(line.decode('utf-8'))
 				f.close()
 			printer.append(i.poll())
@@ -242,10 +242,10 @@ class SimpleRegister:
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
 				count+=1
-				if gilroy:
-					if count>10:
-						self.check_finished(job_array,0)
-						count=0
+				# if gilroy:
+				# 	if count>10:
+				# 		self.check_finished(job_array,0)
+				# 		count=0
 
 		if self.check_finished(job_array,0):
 			for i in range(len(self.files)):

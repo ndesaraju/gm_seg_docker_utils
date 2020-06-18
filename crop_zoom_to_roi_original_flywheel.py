@@ -117,13 +117,18 @@ def create_zoomed_files(psir, roi,outputs_path,slic=-1):
 
 def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     psir_affine, psir_data = load(psir)
+    psir_shape = np.shape(psir_data)
+    try:
+        tmp = np.ceil(psir_shape[2]/2)
+        psir_data = psir_data[:,:,tmp-1]
+    except:
+        pass
     x_res = psir_affine[0,0]
     y_res = psir_affine[1,1]
     x_res,y_res=get_dimension(psir)
     #print(psir_data.shape)
-    if(len(psir_data.shape) == 2):
-        psir_data = psir_data[:,:,np.newaxis]
-    x_dim, y_dim, z_dim = psir_data.shape
+    
+    x_dim, y_dim = psir_data.shape
 
     # COMPUTE SCALE FACTOR AND CROP DISTANCE
     
@@ -135,6 +140,12 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     bsp_order=2
     # import pdbrace()
     cord_nifti_affine, cord_nifti_data = load(cord_nifti)
+    cord_shape = np.shape(cord_nifti_data)
+    try:
+        tmp = np.ceil(cord_shape[2]/2)
+        cord_nifti_data = cord_nifti_data[:,:,tmp-1]
+    except:
+        pass
     # FLIP SIGN OF Y
     
     # TRANSFORM FROM JIM COORDINATES (0,0 at center of PSIR image) TO PSIR SPACE

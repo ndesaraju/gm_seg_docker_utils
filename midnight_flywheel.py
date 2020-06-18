@@ -91,7 +91,7 @@ def scanner(x):
     else:
         return ''
 
-def run_this(static,outputs_path,prefix=0):
+def run_this(static,outputs_path,cycle_size,prefix=0):
     file_handl=open(os.path.join(outputs_path, 'prints.txt'),'a')
     errors=[]
     if not(prefix): 
@@ -197,7 +197,7 @@ def run_this(static,outputs_path,prefix=0):
             return errors
     #try:
         #print(argus)
-    GRL.Syn(argus,file_handl)
+    GRL.Syn(argus,file_handl,cycle_size)
     file_handl.close()
     #except:
         #return ['error with registrations']

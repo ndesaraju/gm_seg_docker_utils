@@ -142,7 +142,7 @@ def create_prob_seg_iteration3(template_grays,templates,image,file_handl):
 
 
 
-def run_this(static,outputs_path,pth,pth2,prefix=0):
+def run_this(static,outputs_path,pth,pth2,cycle_size,prefix=0):
     file_handl=open(outputs_path+'prints.txt','w')
     errors=[]
     pass_on=[]
@@ -161,7 +161,7 @@ def run_this(static,outputs_path,pth,pth2,prefix=0):
     dim=2
     static_path=static
     log.info("about to start first round of registrations!")
-    GRP.SimpleRegister(pth,output_path,static_path,file_handl,pth2=pth2).Syn(gilroy=True)
+    GRP.SimpleRegister(pth,output_path,static_path,file_handl,cycle_size,pth2=pth2).Syn(gilroy=True)
     file_handl.write(str(static)+'\n')
     
 

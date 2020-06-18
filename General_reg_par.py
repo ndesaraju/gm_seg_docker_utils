@@ -16,7 +16,7 @@ from subprocess import check_output
 
 
 class SimpleRegister:
-	def __init__(self,pth,output_path,static_path,file_handl,lamb=None,pth2=None,lamb2=None):
+	def __init__(self,pth,output_path,static_path,file_handl,cycle_size,lamb=None,pth2=None,lamb2=None):
 		if lamb != None:
 			log.info(lamb)
 			exec('from '+lamb+ ' import '+lamb,globals())
@@ -57,7 +57,7 @@ class SimpleRegister:
 			self.files2=sorted([f for f in os.listdir(pth2) if lambs2(f)])
 
 
-
+		self.cycle_size = cycle_size
 	def check_finished(self,ind,cycle):
 		# import pdb
 		# pdb.set_trace()
@@ -242,10 +242,10 @@ class SimpleRegister:
 				job1_array.append((cmd1,cmd2))
 				cmd_array.append(cmd)
 				count+=1
-				# if gilroy:
-				# 	if count>10:
-				# 		self.check_finished(job_array,0)
-				# 		count=0
+				if gilroy:
+					if count>self.cycle_size:
+						self.check_finished(job_array,0)
+						count=0
 
 		if self.check_finished(job_array,0):
 			for i in range(len(self.files)):

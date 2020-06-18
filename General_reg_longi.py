@@ -47,7 +47,7 @@ def loadnii(path):
     data = im.get_data()
     return data, aff
 
-def Syn(arg,file_handl):
+def Syn(arg,file_handl,cycle_size):
 	dim=2
 	grad_step=0.1
 	bins=32
@@ -88,9 +88,9 @@ def Syn(arg,file_handl):
 			job_array.append(Popen(cmd))
 			count += 1
 			job1_array.append((cmd1))
-			# if count>15:
-			# 	check_finished(job_array,0)
-			# 	count = 0
+			if count>cycle_size:
+				check_finished(job_array,0)
+				count = 0
 	
 	# for cmd in job_array:
 	# 	proc = Popen(cmd,stdout=PIPE)

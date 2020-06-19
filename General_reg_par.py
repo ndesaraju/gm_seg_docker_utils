@@ -243,7 +243,7 @@ class SimpleRegister:
 				cmd_array.append(cmd)
 				count+=1
 				if gilroy:
-					if count>cycle_size:
+					if count>self.cycle_size:
 						self.check_finished(job_array,0)
 						count=0
 

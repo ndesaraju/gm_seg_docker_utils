@@ -1,5 +1,6 @@
-
 import numpy as np
+import random
+import copy
 import nibabel as nb
 from glob import glob
 import commonly as c
@@ -8,6 +9,7 @@ from collections import defaultdict
 import matplotlib.pyplot as plt
 import sys
 from scipy.stats import norm
+import scipy.stats as statss
 import os
 from subprocess import Popen
 from subprocess import PIPE
@@ -17,11 +19,15 @@ import nibabel as nb
 import numpy as np
 from glob import glob
 import matplotlib.pyplot as plt
+import commonly as c
+import os
 import scipy.stats as stats
 from scipy.optimize import curve_fit
 from avgim import avgim
 ##just to apply warps to cord and mask iamges##
-import General_reg_par as GRP
+from scipy.optimize import curve_fit
+import logging as log
+from henrygce.logging import log_gm_job_status
 
 def sigmoid(x,x0,k,y0):
     y = 1 / (1 + np.exp(-k*(x-x0))) + y0
@@ -41,8 +47,8 @@ def quantile_transform(image):
     normal_data=[dist.pdf(step*(-1*int(len(unique_vals)/2)+x)) for x in range(len(unique_vals))]
     
     new_nums=[]
-    print(len(normal_data))
-    print(len(unique_vals))
+    log.info(len(normal_data))
+    log.info(len(unique_vals))
     d={}
     for i in range(len(unique_vals)):
         d[unique_vals[i]]=normal_data[i]
@@ -56,7 +62,7 @@ def quantile_transform(image):
 def quantile_transform(image):
     dat_array=image
     new_dats=np.zeros(dat_array.shape)
-    nonzer_dat=dat_array[np.where(dat_array!=0)]
+    nonzer_dat=dat_array[np.where(dat_array>0)]
     unique_vals=sorted(set(nonzer_dat))
     #print(len(unique_vals))
     #input()
@@ -81,17 +87,26 @@ def quantile_transform(image):
 
             
     return new_dats
-def z_score(image):
-    nonzer=image[np.where(image!=0)]
+def z_score(image,mapt=0):       
+    nonzer=image[np.where(image>0)]
     mean=np.mean(nonzer)
     std=np.std(nonzer)
+    image_copy=copy.deepcopy(image)
+
+    tmappers=np.where(mapt<-1.5)
+    for i in range(int(len(tmappers[0])*(5/6))):
+        image_copy[tmappers[0][i],tmappers[1][i]]=random.randrange(int(mean-std)*100,int(mean+std)*100,1)*.01
+    nonzer=image_copy[np.where(image>0)]
+    new_mean=np.mean(nonzer)
+    new_std=np.std(nonzer)
+
     sh=image.shape
     r_image=np.zeros(sh)
     for i in range(sh[0]):
         for j in range(sh[1]):
             if image[i,j]==0:
                 continue
-            r_image[i,j]=(image[i,j]-mean)/std
+            r_image[i,j]=(image[i,j]-new_mean)/new_std
     return r_image
 def func_l(x,a,b):
     return (a*x)+b
@@ -100,6 +115,42 @@ def rounds(x):
         return int(x)+1
     else:
         return int(x)
+def create_prob_seg_iteration3(template_grays,templates,image,file_handl):
+        a=nb.load(image)
+        adat_raw=a.get_data()
+        adat=quantile_transform(a.get_data())
+        #print(adat.dtype)
+        #input()
+        distributions_raw=[]
+        distributions=[]
+        fgs=[]
+        data_dict={}
+        for i in template_grays:
+            #print(c.get_ms(os.path.basename(i)),i)
+            data_dict[c.get_ms(os.path.basename(i))]=i
+
+        for i in templates:
+            temp=nb.load(i).get_data()
+            temp=quantile_transform(temp)
+            #print('here')
+            try:
+                #print('here')
+                z=z_score(temp)
+            except:
+                log.info(sys.exc_info())
+                file_handl.write(str(sys.exc_info())+'\n')
+                continue
+            try:
+                #print(data_dict[c.get_ms(os.path.basename(i))],i)
+                fg=nb.load(data_dict[c.get_ms(os.path.basename(i))]).get_data()
+            except:
+                log.info(sys.exc_info())
+                file_handl.write(str(sys.exc_info())+'\n')
+                continue
+            distributions.append(z)
+            fgs.append(fg)
+        
+        return fgs,distributions,a,adat,adat_raw
 def scanner(x):
     if 'SKYRA' in x:
         return '_SKYRA'
@@ -109,126 +160,78 @@ def scanner(x):
         return '_PHILIPS'
     else:
         return ''
-    
-def create_prob_seg_iteration3(template_grays,templates,image,naming):
-        base='/data/henry10-w/jjuwono/bayesion_masks_'+naming
-        a=nb.load(image)
-        adat_raw=a.get_data()
-        adat=quantile_transform(a.get_data())
-        print(adat.dtype)
-        #input()
-        distributions_raw=[]
-        distributions=[]
-        fgs=[]
-        data_dict={}
-        for i in template_grays:
-            print(c.get_ms(os.path.basename(i)),i)
-            data_dict[c.get_ms(os.path.basename(i))]=i
 
-        for i in templates:
-            temp=nb.load(i).get_data()
-            temp=quantile_transform(temp)
-            print('here')
-            try:
-                z=z_score(temp)
-            except:
-                print(sys.exc_info())
-                continue
-            try:
-                print(data_dict[c.get_ms(os.path.basename(i))],i)
-                fg=nb.load(data_dict[c.get_ms(os.path.basename(i))]).get_data()
-            except:
-                print(sys.exc_info())
-                continue
-            distributions.append(z)
-            fgs.append(fg)
-        
-        return fgs,distributions,a,adat,adat_raw
-
-prefix='test_retest_PSIR'
-#glob for images to segment#
-glob_path=glob('/data/henry8/nico/SC_ATROPHY_RAP/*/*/*/*C2*/ms*only_cord.nii.gz')+glob('/data/henry8/nico/SC_ATROPHY_RAP/*/*/*/*C2*/vol*only_cord.nii.gz')
-glob_path=glob('/data/henry8/nico/SC_ATROPHY_RAP/*/SKYRA/PSIR/C23_retest/*only_cord.nii.gz')
-errors=[]
-pass_on=[]
-for static in glob_path:
-    if 'retest' in static:
-        mse_static=c.get_ms(static)+'PSIR_retest'+scanner(static)
+#loop through input#
+def run_this(static,outputs_path,subj, sess, protocol,prefix=0):
+    file_handl=open(os.path.join(outputs_path, 'papers.txt'),'a')
+    apply_warps=False
+    if not(prefix): 
+        if 'retest' in static:
+            subject=c.get_mse(static)+'retest'+scanner(static)
+        else:
+            subject=c.get_mse(static)+scanner(static)
     else:
-        mse_static=c.get_ms(static)+'PSIR_'+scanner(static)
+         subject=prefix
+    log.info('#########{}######{}'.format(subject,subject))
+    mse=subject
+    
 
     try:
-        os.remove('/data/henry4/jjuwono/data/henry4/jjuwono/'+prefix+'/'+mse_static+'/warped/synslice_avggmsegs.nii.gz')
+        os.remove(os.path.join(outputs_path, 'registrations2/warped/synslice_avggmsegs.nii.gz'))
     except:
         pass
-    if os.path.isdir('/data/henry4/jjuwono/new_GM_method/'+mse_static):
-        continue
-    output_path='/data/henry4/jjuwono/data/henry4/jjuwono/'+prefix+'/'+mse_static+'/'
-    files=sorted(glob('/data/henry6/esha/Data/Interp_10/Current_Data/sharpened/*'))
-    files2=sorted(glob('/data/henry6/esha/Data/Masks_interp10/butterfly/all/*'))
-    pth='/data/henry6/esha/Data/Interp_10/Current_Data/sharpened/'
-    pth2='/data/henry6/esha/Data/Masks_interp10/butterfly/all/'
-    dim=2
-    static_path=static
-    GRP.SimpleRegister(pth,output_path,static_path,pth2=pth2).Syn(gilroy=True)
-    #if not os.path.exists(output_path+'warped1'):
-    #    os.makedirs(self.output_path+'warped1')
-    #for i in range(len(files)):
-    #    if 'syn' in files[i]:
-    #        continue
-    #   fls=os.path.basename(files[i])
-    #    fls2=os.path.basename(files2[i])
-    #    print((fls,fls2))
-        #cmd1=['WarpImageMultiTransform',str(dim),files2[i],
-        #       output_path+'warped/'+fls2.split('.')[0]+'.nii.gz',
-        #       output_path+'warp'+fls.split('.')[0]+'1Warp.nii.gz',
-        #       output_path+'warp'+fls.split('.')[0]+'0GenericAffine.mat',
-        #       '-R',static_path, '\n']
-        #cmd2=['WarpImageMultiTransform',str(dim),files[i],
-        #       output_path+'warped1/'+fls.split('.')[0]+'.nii.gz',
-        #       output_path+'warp'+fls.split('.')[0]+'1Warp.nii.gz',
-        #       output_path+'warp'+fls.split('.')[0]+'0GenericAffine.mat',
-        #       '-R',static_path, '\n']
-        #proc=Popen(cmd1,stdout=PIPE)
 
-        #proc.wait()
+    output_path = os.path.join(outputs_path, 'registrations1/')
+    log_gm_job_status("final set of warps", subj, sess, protocol)
+  
+    if apply_warps==True:
+        dim=2
+        static_path=static
+        files=sorted(glob('/flywheel/v0/input/pth/*'))
+        files2=sorted(glob('/flywheel/v0/input/pth2/*'))
+        if not os.path.exists(os.path.join(output_path, 'warped1')):
+            os.makedirs(os.path.join(self.output_path, 'warped1'))
+        for i in range(len(files)):
+            if 'syn' in files[i]:
+                continue
+            fls=os.path.basename(files[i])
+            fls2=os.path.basename(files2[i])
+            log.info((fls,fls2))
+            cmd1=['/opt/ants-2.3.1/WarpImageMultiTransform',str(dim),files2[i],
+                   os.path.join(os.path.join(output_path, 'warped/'), fls2.split('.')[0]+'.nii.gz'),
+                   os.path.join(output_path, 'warp'+fls.split('.')[0]+'1Warp.nii.gz'),
+                   os.path.join(output_path, 'warp'+fls.split('.')[0]+'0GenericAffine.mat'),
+                   '-R',static_path, '\n']
+            cmd2=['/opt/ants-2.3.1/WarpImageMultiTransform',str(dim),files[i],
+                   os.path.join(os.path.join(output_path, 'warped1/'), fls.split('.')[0]+'.nii.gz'),
+                   os.path.join(output_path, 'warp'+fls.split('.')[0]+'1Warp.nii.gz'),
+                   os.path.join(output_path, 'warp'+fls.split('.')[0]+'0GenericAffine.mat'),
+                   '-R',static_path, '\n']
+            proc=Popen(cmd1,stdout=PIPE)
+            proc.wait()
 
-        #proc=Popen(cmd2,stdout=PIPE)
-        #proc.wait()
-        
+            proc=Popen(cmd2,stdout=PIPE)
+            proc.wait()
+###run process to grab distributions##
 
-    print(static)
-    
+    template_grays=glob(os.path.join(outputs_path, 'registrations2/warped/ms*.nii.gz'))
+    templates=glob(os.path.join(outputs_path, 'registrations1/warped1/ms*.nii.gz'))
+    fgs,distributions,a,adat,adat_raw=create_prob_seg_iteration3(template_grays,templates,static,file_handl) 
+    avgim(os.path.join(outputs_path, 'registrations2/warped/'))
+###run process to fit lines###
 
-    #try:
-    #gray matter transformed images#
-    template_grays=glob('/data/henry4/jjuwono/data/henry4/jjuwono/'+prefix+'/'+mse_static+'/warped/*ms*')
-    #cord transforms#
-    templates=glob('/data/henry4/jjuwono/data/henry4/jjuwono/'+prefix+'/'+mse_static+'/warped1/*ms*')
-
-
-
-
-    fgs,distributions,a,adat,adat_raw=create_prob_seg_iteration3(template_grays,templates,static,prefix)
-    
-    
-    
-    
-    
-    avgim('/data/henry4/jjuwono/data/henry4/jjuwono/'+prefix+'/'+mse_static+'/warped/')
-    
     
     aff=nb.load(static)
-
     adat_raw=nb.load(static).get_data()
-    adat_z=z_score(adat)
-    #print(adat.dtype)
-    #mask=nb.load(glob('/data/henry4/jjuwono/data/henry4/jjuwono/'+prefix+'/'+mse_static+'/warped/syn*')[0]).get_data()
+    first_tmap=nb.load(glob(os.path.join(outputs_path, 'quality_assurance/t_map.nii.gz'))[0]).get_data()
+    adat_z=z_score(adat,mapt=first_tmap)
+    mask=nb.load(glob(os.path.join(outputs_path, 'registrations2/warped/syn*'))[0]).get_data()
 
-    #mask=np.where(mask>.6,mask,0)
-    #bar=np.mean(adat_z[np.where(mask>0)])
+    mask=np.where(mask>.6,mask,0)
+    bar=np.mean(adat_z[np.where(mask>0)])
     sh=adat.shape
     slope=np.zeros(sh)
+    screwed=np.zeros(sh)
     intercept=np.zeros(sh)
     confidences=np.zeros(sh)
     confidences1=np.zeros(sh)
@@ -239,10 +242,11 @@ for static in glob_path:
     new_image_logi=np.zeros(sh)
     original_line_fit=np.zeros(sh)
     color_im=np.zeros(sh)
-    print('length fg:{}'.format(len(fgs)))
-    print('length dist:{}'.format(len(distributions)))
+    file_handl.write(str(len(fgs))+'\n')
+    file_handl.write(str(len(distributions))+'\n')
     distributions=np.asarray(distributions)
     fgs=np.asarray(fgs)
+    file_handl.close()
     for i in range(sh[0]):
         for j in range(sh[1]):
     
@@ -251,7 +255,16 @@ for static in glob_path:
     ##insert A block here for polynomial degree fitting ###
             ##average method##
             a = np.array(distributions[:,i,j])[np.newaxis]
-            params=np.polyfit(distributions[:,i,j],fgs[:,i,j],1)
+            try:
+                params=np.polyfit(distributions[:,i,j],fgs[:,i,j],1)
+            except:
+                screwed[i,j]=1
+                #plt.plot(distributions[:,i,j],fgs[:,i,j],'o',label=str((i,j)))
+                #plt.legend()
+                #plt.show()
+                #input()
+                continue
+                
             original_line_fit[i,j]=(adat_z[i,j]*params[0])+params[1]
             if len(np.where(fgs[:,i,j]==0)[0])<40 or len(np.where(fgs[:,i,j]==1)[0])<40:
             
@@ -280,7 +293,6 @@ for static in glob_path:
                     #input([group0,group1])
             new_image_logi[i,j]=assign
 
-<<<<<<< HEAD
             ##reverse method##
             if len(np.where(fgs[:,i,j]==0)[0])<25 or len(np.where(fgs[:,i,j]==1)[0])<25:
                 params=np.polyfit(distributions[:,i,j],fgs[:,i,j],1)
@@ -299,7 +311,7 @@ for static in glob_path:
                 slope[i,j]=params[0]
                 intercept[i,j]=params[1]
                 if abs(params[0])<2*(covs[0,0]**0.5):
-                    new_image[i,j]=stats.mode(fgs[:,i,j],axis=None)[0][0]
+                    new_image[i,j]=statss.mode(fgs[:,i,j],axis=None)[0][0]
                     color_im[i,j]=2
                 else:
                     new_image[i,j]=(adat_z[i,j]-params[1])/params[0]
@@ -307,25 +319,6 @@ for static in glob_path:
                         #input('whyyyyyyyyyyyyuyuyyyyyyyy')
                         covs[0,1]=0
                     confidence=(abs((covs[1,1]/((adat_z[i,j]-params[1])**2))+(covs[0,0]/((params[0])**2))-(2*((abs(covs[0,1]))**0.5)/((adat_z[i,j]-params[1])*params[0]))))**0.5
-=======
-                    slope[i,j]=params[0]
-                    intercept[i,j]=params[1]
-                    if abs(params[0])<2*(covs[0,0]**0.5):
-                        new_image[i,j]=stats.mode(fgs[:,i,j],axis=None)[0][0]
-                        color_im[i,j]=2
-                    else:
-                        new_image[i,j]=(adat_z[i,j]-params[1])/params[0]
-                        if np.isnan(covs[0,1]):
-                            #input('whyyyyyyyyyyyyuyuyyyyyyyy')
-                            covs[0,1]=0
-                        confidence=(abs((covs[1,1]/((adat_z[i,j]-params[1])**2))+(covs[0,0]/((params[0])**2))-(2*((abs(covs[0,1]))**0.5)/((adat_z[i,j]-params[1])*params[0]))))**0.5
-                    
-                        confidences[i,j]=confidence/new_image[i,j]
-                        if confidence>=2:
-                            new_image[i,j]=-1000
-                        color_im[i,j]=3
-                        if i>136:
->>>>>>> e59c29b396a6714f5ef3dc38ee43a9c8ff16b607
                 
                     confidences[i,j]=confidence/new_image[i,j]
                     if confidence>=2:
@@ -351,7 +344,7 @@ for static in glob_path:
                         #plt.close()
                         #input((params[1],params[0]+params[1]))
                         pass
-               # print(params[0],params[1])
+            #print(params[0],params[1])
             mean_template=np.mean(distributions[:,i,j])
             std_template=np.std(distributions[:,i,j])
             mean_templates[i,j]=mean_template
@@ -362,33 +355,13 @@ for static in glob_path:
     #nb.save(nb.Nifti1Image(slope,a.affine),'/data/henry4/jjuwono/slopes.nii.gz')
     #nb.save(nb.Nifti1Image(intercept,a.affine),'/data/henry4/jjuwono/intercepts.nii.gz')
     try:
-        os.mkdir('/data/henry4/jjuwono/new_GM_method/'+mse_static)
+        os.mkdir(os.path.join(outputs_path, 'final_output'))
     except:
         pass
-    nb.save(nb.Nifti1Image(confidences,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse_static+'/confidence.nii.gz')
-    nb.save(nb.Nifti1Image(new_image,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse_static+'/new_image.nii.gz')
-    nb.save(nb.Nifti1Image(new_image_logi,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse_static+'/new_image_logi.nii.gz')
-    nb.save(nb.Nifti1Image(t_map,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse_static+'/t_map.nii.gz')
-    nb.save(nb.Nifti1Image(color_im,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse_static+'/color_im.nii.gz')
-    nb.save(nb.Nifti1Image(original_line_fit,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse_static+'/original_line_fit.nii.gz')
-    try:
-        os.symlink(static,'/data/henry4/jjuwono/new_GM_method/'+mse_static+'/raw_im.nii.gz')
-    except:
-<<<<<<< HEAD
-        print('errors:{}'.format(mse_static))
-    pass_on.append(mse_static)
-#except:
-    errors.append(mse_static)
-=======
-        errors.append(mse_static)
->>>>>>> e59c29b396a6714f5ef3dc38ee43a9c8ff16b607
-f=open('pass_on.txt','w')
-for i in pass_on:
-    f.write(i)+'\n'
-f.close()
-
-print(errors)
-
-
-
-
+    #nb.save(nb.Nifti1Image(confidences,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/confidence.nii.gz')
+    #nb.save(nb.Nifti1Image(new_image,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/new_image.nii.gz')
+    #nb.save(nb.Nifti1Image(new_image_logi,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/new_image_logi.nii.gz')
+    nb.save(nb.Nifti1Image(t_map,aff.affine), os.path.join(outputs_path, 'final_output/rereg_t_map.nii.gz'))
+    #nb.save(nb.Nifti1Image(color_im,aff.affine),'/data/henry4/jjuwono/new_GM_method/'+mse+'/color_im.nii.gz')
+    nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, 'final_output/rereg_original_line_fit.nii.gz'))
+    return 1

@@ -13,10 +13,10 @@ import nibabel as nib
 import multiprocessing as mp
 import logging as log
 from subprocess import check_output
-
+from henrygce.logging import log_gm_job_status, log_gm_area
 
 class SimpleRegister:
-	def __init__(self,pth,output_path,static_path,file_handl,cycle_size,lamb=None,pth2=None,lamb2=None):
+	def __init__(self,pth,output_path,static_path,file_handl,cycle_size, subj, sess, protocol, lamb=None,pth2=None,lamb2=None):
 		if lamb != None:
 			log.info(lamb)
 			exec('from '+lamb+ ' import '+lamb,globals())
@@ -26,7 +26,7 @@ class SimpleRegister:
 			log.info(type(lambs))
 		else:
 			exec('lambs=lambda x:True',globals())
-			 #lambs=lambda x:True
+			#lambs=lambda x:True
 			
 		if lamb2 != None:
 			exec('from '+lamb2+ ' import '+lamb2,globals())
@@ -56,7 +56,9 @@ class SimpleRegister:
 			self.pth2=pth2
 			self.files2=sorted([f for f in os.listdir(pth2) if lambs2(f)])
 
-
+		self.subj = subj
+		self.sess = sess
+		self.protocol = protocol
 		self.cycle_size = cycle_size
 	def check_finished(self,ind,cycle):
 		# import pdb
@@ -89,6 +91,7 @@ class SimpleRegister:
 				fin=fin+1
 			count+=1
 		log.info(printer)
+		log_gm_job_status("in progress; first cycle {}/{} finished".format(len(ind)-fin, len(ind)), self.subj, self.sess, self.protocol)
 		log.info('{}/{} processes finished'.format(len(ind)-fin,len(ind)))
 		# pdb.set_trace()
 		if fin>0:
@@ -228,7 +231,7 @@ class SimpleRegister:
 				# print(self.output_path,os.path.join(self.pth, fil),os.path.join(self.pth2,fil2))
 
 				# cmd=['/opt/ants-2.3.1/antsRegistration', '-v','--dimensionality',str(dim),'--output',os.path.join(self.output_path,'warp'+fil.split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
-				cmd=['/opt/ants-2.3.1/antsRegistration', '--dimensionality',str(dim),'--output',os.path.join(self.output_path,'warp'+fil.split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.1,2,1]','--metric',metric_str1,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
+				cmd=['/opt/ants-2.3.1/antsRegistration', '--dimensionality',str(dim),'--output',os.path.join(self.output_path,'warp'+fil.split('.')[0]),'--transform','Rigid['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmasr),'--transform','Affine['+str(grad_step)+']','--metric',metric_str2,'--convergence','['+convergence+','+convrg_thresh+',10]','--shrink-factors',str(shrink_factors),'--smoothing-sigmas',str(smoothing_sigmas),'--transform','SyN[0.1,2,1]','--metric',metric_str,'--convergence','[500x500x500,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1','--transform','SyN[0.12,2,1.0]','--metric',metric_str1,'--convergence','[500x500x1000,1e-6,10]','--shrink-factors','4x1x1','--smoothing-sigmas','1x1x1']
 
 				# log.info(cmd)
 				# print(cmd)

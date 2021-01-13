@@ -15,8 +15,9 @@ from glob import glob
 from time import sleep
 import logging as log
 from subprocess import check_output
+from henrygce.logging import log_gm_job_status
 
-def check_finished(ind,cycle):
+def check_finished(ind,subj, sess, protocol, cycle):
 	log.info('cycle:{}'.format(cycle))
 	printer=[]
 	sleep(90)
@@ -28,9 +29,10 @@ def check_finished(ind,cycle):
 		if i.poll()==None:
 			fin=fin+1
 	log.info(printer)
+	log_gm_job_status("in progress; on second set of registrations: {0}/{1} finished".format(len(ind)-fin, len(ind)), subj, sess, protocol)
 	log.info('{}/{} processes finished'.format(len(ind)-fin,len(ind)))
 	if fin>0:
-		return check_finished(ind,cycle+1)
+            return check_finished(ind,subj, sess, protocol,cycle+1)
 	return True
 
 
@@ -47,7 +49,7 @@ def loadnii(path):
     data = im.get_data()
     return data, aff
 
-def Syn(arg,file_handl,cycle_size):
+def Syn(arg,file_handl,cycle_size, subj, sess, protocol):
 	dim=2
 	grad_step=0.1
 	bins=32
@@ -89,7 +91,7 @@ def Syn(arg,file_handl,cycle_size):
 			count += 1
 			job1_array.append((cmd1))
 			if count>cycle_size:
-				check_finished(job_array,0)
+				check_finished(job_array,subj, sess, protocol, 0)
 				count = 0
 	
 	# for cmd in job_array:
@@ -97,7 +99,7 @@ def Syn(arg,file_handl,cycle_size):
 	# 	proc.wait()
 
 
-	if check_finished(job_array,0):
+	if check_finished(job_array,subj, sess, protocol, 0):
 		for i in range(len(job1_array)):
 			proc1=Popen(job1_array[i],stdout=PIPE)
 			proc1.wait()

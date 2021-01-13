@@ -110,12 +110,18 @@ def create_zoomed_files(psir, roi,outputs_path,slic=-1):
         os.mkdir(outputs_path+'/final_output')
     except:
         pass
+    mini=np.amin(cord)
+    mask2yo=np.where(cord==0,cord,1)
+    if mini<0:
+        cord=cord+abs(mini)+50
+        cord=cord*mask2yo
+
     cordpth=outputs_path+'/final_output/only_cord'+os.path.basename(psir)
     cordsave=nib.save(nib.Nifti1Image(cord,crop_aff),cordpth)
     
     return cord,crop_aff,cordpth
 
-def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
+def create_nifti_zoomed(psir, cord_nifti, outputs_path, pre_samp_thresh, post_samp_thresh, slic=-1):
     psir_affine, psir_data = load(psir)
     psir_shape = np.shape(psir_data)
     try:
@@ -129,6 +135,7 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     #print(psir_data.shape)
     print(psir_data.shape)
     x_dim, y_dim = psir_data.shape
+    
 
     # COMPUTE SCALE FACTOR AND CROP DISTANCE
     
@@ -137,7 +144,7 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     
     # settings
     numvox = cropdist*2*scalefac
-    bsp_order=2
+    bsp_order=1
     # import pdbrace()
     cord_nifti_affine, cord_nifti_data = load(cord_nifti)
     cord_shape = np.shape(cord_nifti_data)
@@ -146,6 +153,13 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
         cord_nifti_data = cord_nifti_data[:,:,tmp-1]
     except:
         pass
+    
+    x_res_cord,y_res_cord=get_dimension(cord_nifti)
+    cord_nifti_data=wezoom.zoom(cord_nifti_data,x_res_cord/x_res).astype(np.float)
+    cord_nifti_data=np.logical_and(cord_nifti_data>0.1,cord_nifti_data>0.05).astype(np.float)
+    print(x_res_cord,y_res_cord)
+    scalefac_cord=int(round(math.sqrt((abs(x_res*y_res)/(.078125**2)))))
+    cropdist_cord=int(round(150/float(scalefac_cord)))
     # FLIP SIGN OF Y
     
     # TRANSFORM FROM JIM COORDINATES (0,0 at center of PSIR image) TO PSIR SPACE
@@ -155,16 +169,17 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
     y_additive_factor = y_dim/2
     # FIND CENTER OF MASS OF SPINAL CORD WM, THEN SET BORDERS
     center_of_mass_psir_space = center_of_mass(cord_nifti_data)
+    center_of_mass_cord_space=center_of_mass(cord_nifti_data)
 
     xmin_psir_space = int(center_of_mass_psir_space[0]-cropdist)
     xmax_psir_space = int(center_of_mass_psir_space[0]+cropdist)
     ymin_psir_space = int(center_of_mass_psir_space[1]-cropdist)
     ymax_psir_space = int(center_of_mass_psir_space[1]+cropdist)
 
-    xmin_JIM_space = (xmin_psir_space-x_additive_factor)/x_multiplicative_factor
-    xmax_JIM_space = (xmax_psir_space-x_additive_factor)/x_multiplicative_factor
-    ymin_JIM_space = (ymin_psir_space-y_additive_factor)/y_multiplicative_factor
-    ymax_JIM_space = (ymax_psir_space-y_additive_factor)/y_multiplicative_factor
+    xmin_cord_space = int(center_of_mass_cord_space[0]-cropdist_cord)
+    xmax_cord_space = int(center_of_mass_cord_space[0]+cropdist_cord)
+    ymin_cord_space = int(center_of_mass_cord_space[1]-cropdist_cord)
+    ymax_cord_space = int(center_of_mass_cord_space[1]+cropdist_cord)
     #print 'xmin = %s; xmax = %s; ymin = %s; ymax = %s' % (xmin, xmax, ymin, ymax)
 
     # MAKE PSIR CROP IMAGE
@@ -176,17 +191,23 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
         z = psir_crop[:,:]
     
     #MAKE CORD CROP
-    cord_nifti_crop = cord_nifti_data[xmin_psir_space:xmax_psir_space, ymin_psir_space:ymax_psir_space]
+    cord_nifti_crop = cord_nifti_data[xmin_cord_space:xmax_cord_space, ymin_cord_space:ymax_cord_space]
+    print(numvox/(xmax_cord_space-xmin_cord_space))
     # MAKE PSIR CROP INTERP IMAGE
     zoomed = wezoom.zoom(z, numvox/(xmax_psir_space-xmin_psir_space), order=bsp_order)
     zoomed_file = psir[:-7]+'_zoomed.nii.gz'
-    #nib.save(nib.Nifti1Image(zoomed,crop_aff), zoomed_file)
+    nib.save(nib.Nifti1Image(zoomed,crop_aff), zoomed_file)
 
     # MAKE CORD MASK IMAGE
-    zoomed_cord_mask = wezoom.zoom(cord_nifti_crop, numvox/(xmax_psir_space-xmin_psir_space), order=bsp_order)
+    #nib.save(nib.Nifti1Image(cord_nifti_crop,crop_aff),psir[:-7]+'_zoomed_cord_mask_pre.nii.gz')
+    cord_nifti_crop=np.logical_and(cord_nifti_crop>float(pre_samp_thresh),cord_nifti_crop<3).astype(np.float)
+    area_of_cord=np.sum(cord_nifti_crop)
+    zoomed_cord_mask = wezoom.zoom(cord_nifti_crop, numvox/(xmax_cord_space-xmin_cord_space), order=bsp_order)
     cord_mask_file = psir[:-7]+'_zoomed_cord_mask.nii.gz'
-    #cord_mask_img = nib.save(nib.Nifti1Image(cord_mask.astype("uint8"), crop_aff), cord_mask_file)
-    zoomed_cord_mask = np.logical_and(zoomed_cord_mask > 0.1, zoomed_cord_mask < 3)
+    print(cord_mask_file)
+    cord_mask_img = nib.save(nib.Nifti1Image(zoomed_cord_mask.astype(np.float), crop_aff), cord_mask_file)
+
+    zoomed_cord_mask = np.logical_and(zoomed_cord_mask > float(post_samp_thresh), zoomed_cord_mask < 3).astype(np.float)
 
     # MAKE CORD IMAGE
     #print('cord_mask:{} zoomed: {}'.format(cord_mask.shape,zoomed.shape))
@@ -210,6 +231,11 @@ def create_nifti_zoomed(psir, cord_nifti, outputs_path, slic=-1):
         os.mkdir(os.path.join(outputs_path, 'final_output'))
     except:
         pass
+    mini=np.amin(cord)
+    mask2yo=np.where(cord==0,cord,1)
+    if mini<0:
+        cord=cord+abs(mini)+50
+        cord=cord*mask2yo
     cordpth=os.path.join(outputs_path, 'final_output/only_cord_'+os.path.basename(psir))
     cordsave=nib.save(nib.Nifti1Image(cord,crop_aff),cordpth)
     

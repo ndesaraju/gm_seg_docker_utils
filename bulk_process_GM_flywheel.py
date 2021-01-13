@@ -17,6 +17,7 @@ from avgim import avgim
 ##just to apply warps to cord and mask iamges##
 import General_reg_par as GRP
 import logging as log
+from henrygce.logging import log_gm_job_status
 
 def sigmoid(x,x0,k,y0):
     y = 1 / (1 + np.exp(-k*(x-x0))) + y0
@@ -142,7 +143,7 @@ def create_prob_seg_iteration3(template_grays,templates,image,file_handl):
 
 
 
-def run_this(static,outputs_path,pth,pth2,cycle_size,prefix=0):
+def run_this(static,outputs_path,pth,pth2,cycle_size,subj, sess, protocol,prefix=0):
     file_handl=open(outputs_path+'prints.txt','w')
     errors=[]
     pass_on=[]
@@ -161,11 +162,12 @@ def run_this(static,outputs_path,pth,pth2,cycle_size,prefix=0):
     dim=2
     static_path=static
     log.info("about to start first round of registrations!")
-    GRP.SimpleRegister(pth,output_path,static_path,file_handl,cycle_size,pth2=pth2).Syn(gilroy=True)
+    GRP.SimpleRegister(pth,output_path,static_path,file_handl,cycle_size,subj, sess, protocol, pth2=pth2).Syn(gilroy=True)
     file_handl.write(str(static)+'\n')
     
 
-    try:
+    if True:
+        log_gm_job_status("quality assurance check", subj, sess, protocol)
         #gray matter transformed images#
         template_grays=glob(os.path.join(output_path, 'warped/*ms*'))
         #cord transforms#
@@ -209,67 +211,70 @@ def run_this(static,outputs_path,pth,pth2,cycle_size,prefix=0):
         ##insert A block here for polynomial degree fitting ###
                 ##average method##
                 a = np.array(distributions[:,i,j])[np.newaxis]
-                params=np.polyfit(distributions[:,i,j],fgs[:,i,j],1)
-                original_line_fit[i,j]=(adat_z[i,j]*params[0])+params[1]
-                if len(np.where(fgs[:,i,j]==0)[0])<40 or len(np.where(fgs[:,i,j]==1)[0])<40:
-                
-                    assign=(adat_z[i,j]*params[0])+params[1]
+                if np.sum(distributions[:,i,j])==0:
+                    params=[0,np.mean(fgs[:i,j])]
                 else:
+                    params=np.polyfit(distributions[:,i,j],fgs[:,i,j],1)
+                original_line_fit[i,j]=(adat_z[i,j]*params[0])+params[1]
+                #if len(np.where(fgs[:,i,j]==0)[0])<40 or len(np.where(fgs[:,i,j]==1)[0])<40:
+                
+                #    assign=(adat_z[i,j]*params[0])+params[1]
+                #else:
                     #print('logi')
-                    group0=np.mean(distributions[:,i,j][np.where(fgs[:,i,j]==0)])
-                    group1=np.mean(distributions[:,i,j][np.where(fgs[:,i,j]==1)])
-                    grouped=np.where(fgs[:,i,j]!=0,distributions[:,i,j],group0)
-                    grouped=np.where(fgs[:,i,j]!=1,grouped,group1)
-                    params=np.polyfit(grouped,fgs[:,i,j],1)
-                    logi_slope=params[0]
-                    logi_inter=params[1]
-                    assign=(adat_z[i,j]*params[0])+params[1]
-                    if 0<=assign<=1:
-                        assign=assign
-                    elif assign<0:
-                        assign=0
-                    else:
-                        assign=1
+                #    group0=np.mean(distributions[:,i,j][np.where(fgs[:,i,j]==0)])
+                #    group1=np.mean(distributions[:,i,j][np.where(fgs[:,i,j]==1)])
+                #    grouped=np.where(fgs[:,i,j]!=0,distributions[:,i,j],group0)
+                #    grouped=np.where(fgs[:,i,j]!=1,grouped,group1)
+                #    params=np.polyfit(grouped,fgs[:,i,j],1)
+                #    logi_slope=params[0]
+                #    logi_inter=params[1]
+                #    assign=(adat_z[i,j]*params[0])+params[1]
+                #    if 0<=assign<=1:
+                #        assign=assign
+                #    elif assign<0:
+                #        assign=0
+                #    else:
+                #        assign=1
                     #if params[0]!=0:
                         #plt.plot(grouped,fgs[:,i,j],'o',label=str((i,j)))
                         #plt.plot([group0,group1],[group0*params[0]-params[1],group1*params[0]-params[1]],'r')
                         #plt.legend()
                         #plt.show()
                         #input([group0,group1])
-                new_image_logi[i,j]=assign
+                #new_image_logi[i,j]=assign
 
                 ##reverse method##
-                if len(np.where(fgs[:,i,j]==0)[0])<25 or len(np.where(fgs[:,i,j]==1)[0])<25:
-                    params=np.polyfit(distributions[:,i,j],fgs[:,i,j],1)
-                    new_image[i,j]=(adat_z[i,j]*params[0])+params[1]
-                    if len(np.where(fgs[:,i,j]==0)[0])<60:
-                        color_im[i,j]=1
-                else:
+                #if len(np.where(fgs[:,i,j]==0)[0])<25 or len(np.where(fgs[:,i,j]==1)[0])<25:
+                #    params=np.polyfit(distributions[:,i,j],fgs[:,i,j],1)
+                #    new_image[i,j]=(adat_z[i,j]*params[0])+params[1]
+                #    if len(np.where(fgs[:,i,j]==0)[0])<60:
+                #        color_im[i,j]=1
+                #else:
                     #plt.plot(distributions[:,i,j],fgs[:,i,j],'o',label=str((i,j)))
                     #plt.legend()
                     #plt.show()
                     #input()
                 
-                    params,covs=np.polyfit(fgs[:,i,j],distributions[:,i,j],1,cov=True)
+                #    params,covs=np.polyfit(fgs[:,i,j],distributions[:,i,j],1,cov=True)
                     #input(covs)
 
-                    slope[i,j]=params[0]
-                    intercept[i,j]=params[1]
-                    if abs(params[0])<2*(covs[0,0]**0.5):
-                        new_image[i,j]=stats.mode(fgs[:,i,j],axis=None)[0][0]
-                        color_im[i,j]=2
-                    else:
-                        new_image[i,j]=(adat_z[i,j]-params[1])/params[0]
-                        if np.isnan(covs[0,1]):
+                 #   slope[i,j]=params[0]
+                 #   intercept[i,j]=params[1]
+                 #   if abs(params[0])<2*(covs[0,0]**0.5):
+                 #       new_image[i,j]=stats.mode(fgs[:,i,j],axis=None)[0][0]
+                 #       color_im[i,j]=2
+                 #   else:
+                 #       new_image[i,j]=(adat_z[i,j]-params[1])/params[0]
+                 #       if np.isnan(covs[0,1]):
                             #input('whyyyyyyyyyyyyuyuyyyyyyyy')
-                            covs[0,1]=0
-                        confidence=(abs((covs[1,1]/((adat_z[i,j]-params[1])**2))+(covs[0,0]/((params[0])**2))-(2*((abs(covs[0,1]))**0.5)/((adat_z[i,j]-params[1])*params[0]))))**0.5
+                 #           covs[0,1]=0
+                 #       confidence=(abs((covs[1,1]/((adat_z[i,j]-params[1])**2))+(covs[0,0]/((params[0])**2))-(2*((abs(covs[0,1]))**0.5)/((adat_z[i,j]-params[1])*params[0]))))**0.5
                     
-                        confidences[i,j]=confidence/new_image[i,j]
-                        if confidence>=2:
-                            new_image[i,j]=-1000
-                        color_im[i,j]=3
-                        if i>136:
+                  #      confidences[i,j]=confidence/new_image[i,j]
+                  #      if confidence>=2:
+                  #          new_image[i,j]=-1000
+                  #      color_im[i,j]=3
+                  #      if i>136:
                 
                             #plt.plot(fgs[:,i,j],distributions[:,i,j],'o',label=str((i,j)))
                             #plt.plot(sorted(fgs[:,i,j]),[x*params[0]+params[1] for x in sorted(fgs[:,i,j])],'r')
@@ -288,7 +293,7 @@ def run_this(static,outputs_path,pth,pth2,cycle_size,prefix=0):
                             #plt.show()
                             #plt.close()
                             #input((params[1],params[0]+params[1]))
-                            pass
+                   #         pass
                    # print(params[0],params[1])
                 mean_template=np.mean(distributions[:,i,j])
                 std_template=np.std(distributions[:,i,j])
@@ -311,7 +316,7 @@ def run_this(static,outputs_path,pth,pth2,cycle_size,prefix=0):
         nb.save(nb.Nifti1Image(color_im,aff.affine), os.path.join(outputs_path, 'quality_assurance/color_im.nii.gz'))
         nb.save(nb.Nifti1Image(original_line_fit,aff.affine), os.path.join(outputs_path, 'quality_assurance/original_line_fit.nii.gz'))
         return 1
-    except:
+    else:
         return 0
 
 
